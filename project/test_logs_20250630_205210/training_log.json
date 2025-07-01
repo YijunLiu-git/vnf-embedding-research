@@ -1,0 +1,8 @@
+[
+  {
+    "episode": 1,
+    "timestamp": "2025-06-30T20:52:10.882599",
+    "stats": {
+      "total_reward": 34.5465232425162,
+      "steps": 6,
+      "success": 

@@ -1,0 +1,57 @@
+
+train:
+  episodes: 300
+  save_interval: 50
+  log_interval: 10
+topology:
+  type: backbone
+  node_resources:
+    cpu: 0.4
+    memory: 0.3
+    node_types:
+      core: 0.3
+      aggregation: 0.3
+      edge: 0.4
+  edge_resources:
+    bandwidth_min: 5.0
+    bandwidth_max: 20.0
+    latency_min: 1.0
+    latency_max: 10.0
+    jitter_min: 0.1
+    jitter_max: 1.0
+    packet_loss_min: 0.0
+    packet_loss_max: 0.05
+vnf_requirements:
+  cpu_min: 0.2
+  cpu_max: 1.0
+  memory_min: 0.15
+  memory_max: 0.8
+  bandwidth_min: 8.0
+  bandwidth_max: 25.0
+  chain_length_range: [3, 6]
+  priority_levels: [1, 2, 3]
+  priority_distribution: [0.2, 0.5, 0.3]
+  latency_sensitive: true
+  max_acceptable_latency: 5.0
+reward:
+  base_reward: 2.0
+  completion_bonus: 20.0
+  efficiency_weight: 1.5
+  network_weight: 2.0
+  penalty_map:
+    node_occupied: -15.0
+    insufficient_cpu: -20.0
+    insufficient_memory: -18.0
+    insufficient_bandwidth: -12.0
+    no_network_path: -25.0
+    invalid_node_type: -20.0
+    latency_violation: -25.0
+  node_types:
+    core: 0.3
+    aggregation: 0.3
+    edge: 0.4
+gnn:
+  edge_dim: 8
+  hidden_dim: 64
+  output_dim: 256
+  layers: 4

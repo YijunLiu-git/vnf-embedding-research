@@ -1,0 +1,36 @@
+[
+  {
+    "episode": 1,
+    "timestamp": "2025-07-01T13:11:17.363809",
+    "stats": {
+      "total_reward": 27.155392848992104,
+      "steps": 2,
+      "success": true,
+      "sar": 1.0,
+      "splat": 17.836761461428736,
+      "info": {
+        "success": true,
+        "paths": [
+          {
+            "delay": 17.836761461428736,
+            "bandwidth": 12.175109051229176,
+            "hops": 3,
+            "jitter": 0.905262522425847,
+            "loss": 0.038588828904438814
+          }
+        ],
+        "total_delay": 17.836761461428736,
+        "min_bandwidth": 12.175109051229176,
+        "resource_utilization": 0.06258621479190735,
+        "base_reward": 2.0352908459532273,
+        "completion_bonus": 20.0,
+        "efficiency_bonus": 1.3339278821452738,
+        "final_reward": 23.369218728098502,
+        "sar": 1.0,
+        "splat": 17.836761461428736,
+        "embedding_completed": true,
+        "total_steps": 2
+      }
+    }
+  }
+]

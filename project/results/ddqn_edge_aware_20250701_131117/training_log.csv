@@ -1,0 +1,2 @@
+episode,timestamp,total_reward,steps,success,sar,splat,learning_info
+1,2025-07-01T13:11:17.346887,64.04203344074574,4,True,1.0,5.874722326824987,{}
