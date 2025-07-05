@@ -28,6 +28,7 @@ class EdgeAwareStateComputer:
         self.edge_map = list(graph.edges())
         self.edge_index_map = {edge: idx for idx, edge in enumerate(self.edge_map)}
         
+        
         # 缓存机制
         self.path_cache = {}
         self.quality_cache = {}

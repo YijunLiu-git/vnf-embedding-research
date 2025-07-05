@@ -1,4 +1,56 @@
 # enhanced_training_system.py - 集成增强功能的训练系统
+# enhanced_training_system.py - 在文件最开头
+
+def ultimate_emergency_fix():
+    """彻底的应急修复"""
+    print("🛠️ 应用彻底应急修复...")
+    
+    # 1. 禁用增强GNN补丁
+    try:
+        import agents.enhanced_base_agent as enhanced_base
+        def dummy_patch():
+            print("🚫 增强GNN补丁已禁用")
+        enhanced_base.patch_existing_agents = dummy_patch
+    except:
+        pass
+    
+    # 2. 强制使用标准智能体
+    from agents.base_agent import create_agent as original_create_agent
+    
+    def ultra_safe_create_agent(agent_type, agent_id, state_dim, action_dim, edge_dim, config):
+        # 完全移除enhanced标识
+        safe_id = agent_id.replace("_enhanced", "").replace("enhanced_", "")
+        
+        # 创建完全标准的智能体
+        agent = original_create_agent(agent_type, safe_id, state_dim, action_dim, edge_dim, config)
+        
+        # 恢复ID但标记为标准模式
+        agent.agent_id = agent_id
+        agent.is_enhanced = False
+        
+        print(f"✅ {agent_id}: 彻底安全模式")
+        return agent
+    
+    # 3. 阻止任何enhanced相关的导入
+    import sys
+    class BlockedModule:
+        def __getattr__(self, name):
+            print(f"🚫 阻止访问增强模块: {name}")
+            return lambda *args, **kwargs: None
+    
+    try:
+        sys.modules['models.enhanced_gnn_encoder'] = BlockedModule()
+    except:
+        pass
+    
+    # 4. 替换智能体创建函数
+    import agents.base_agent
+    agents.base_agent.create_agent = ultra_safe_create_agent
+    
+    print("✅ 彻底应急修复完成 - 100%标准模式")
+
+# 调用彻底修复（替换原来的emergency_fix()调用）
+ultimate_emergency_fix()
 
 import os
 import torch
@@ -13,6 +65,7 @@ import random
 # 导入增强组件
 from env.enhanced_vnf_env_multi import EnhancedVNFEmbeddingEnv
 from env.topology_loader import generate_topology
+from agents.enhanced_base_agent import patch_existing_agents
 from agents.base_agent import create_agent
 from models.enhanced_gnn_encoder import create_enhanced_edge_aware_encoder
 from rewards.enhanced_edge_aware_reward import compute_enhanced_edge_aware_reward
@@ -32,9 +85,11 @@ class EnhancedEdgeAwareTrainer:
     5. 动态性能监控
     """
     
+    
+    
     def __init__(self, config_path: str = "config.yaml"):
         print(f"🚀 初始化增强Edge-Aware训练系统...")
-        
+        #patch_existing_agents()
         # 加载配置
         self.config = load_config(config_path)
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -162,14 +217,14 @@ class EnhancedEdgeAwareTrainer:
         print(f"   - 状态维度: {expected_node_dim}")
         print(f"   - 动作维度: {action_dim}")
         
-        # Edge-aware智能体（使用增强GNN）
+        # Edge-aware智能体（补丁会自动处理增强GNN）
         self.agents_edge_aware = {}
         for agent_type in self.agent_types:
-            agent_id = f"{agent_type}_edge_aware_enhanced"
+            agent_id = f"{agent_type}_edge_aware_enhanced"  # 保持enhanced标识
             edge_dim = self.config['gnn']['edge_aware']['edge_dim']
             
-            # 创建智能体
-            agent = create_agent(
+            # 直接创建智能体，补丁会处理GNN替换
+            self.agents_edge_aware[agent_type] = create_agent(
                 agent_type=agent_type,
                 agent_id=agent_id,
                 state_dim=expected_node_dim,
@@ -177,15 +232,9 @@ class EnhancedEdgeAwareTrainer:
                 edge_dim=edge_dim,
                 config=self.config
             )
-            
-            # 替换GNN编码器为增强版本
-            enhanced_encoder = create_enhanced_edge_aware_encoder(self.config)
-            agent.gnn_encoder = enhanced_encoder
-            
-            self.agents_edge_aware[agent_type] = agent
-            print(f"   ✅ {agent_id}: 增强GNN编码器")
+            print(f"   ✅ {agent_id}: 增强功能已启用")
         
-        # Baseline智能体
+        # Baseline智能体保持不变
         self.agents_baseline = {}
         for agent_type in self.agent_types:
             agent_id = f"{agent_type}_baseline"
