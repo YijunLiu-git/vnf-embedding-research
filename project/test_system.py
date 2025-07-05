@@ -30,7 +30,7 @@ def test_imports():
         print("✅ 智能体模块导入成功")
         
         # 测试模型模块
-        from models.gnn_encoder import GNNEncoder, EdgeAwareGNNEncoder
+        from models.enhanced_gnn_encoder import EdgeAttentionLayer, EnhancedEdgeAwareGNN
         print("✅ 模型模块导入成功")
         
         # 测试工具模块
@@ -216,7 +216,7 @@ def test_gnn_encoder():
     print("\n🧪 测试GNN编码器...")
     
     try:
-        from models.gnn_encoder import GNNEncoder, EdgeAwareGNNEncoder, create_gnn_encoder
+        from models.enhanced_gnn_encoder import EdgeAttentionLayer, EnhancedEdgeAwareGNN, create_enhanced_edge_aware_encoder_fixed
         from config_loader import load_config
         import torch
         from torch_geometric.data import Data
@@ -237,7 +237,7 @@ def test_gnn_encoder():
         edge_attr_baseline = torch.randn(num_edges, edge_dim_baseline)
         
         # 测试EdgeAware编码器
-        encoder_edge_aware = create_gnn_encoder(config, mode='edge_aware')
+        encoder_edge_aware = create_enhanced_edge_aware_encoder_fixed(config, mode='edge_aware')
         data_full = Data(x=x, edge_index=edge_index, edge_attr=edge_attr_full)
         
         with torch.no_grad():
@@ -245,7 +245,7 @@ def test_gnn_encoder():
             print(f"✅ EdgeAware编码器测试成功: {output_edge_aware.shape}")
         
         # 测试Baseline编码器
-        encoder_baseline = create_gnn_encoder(config, mode='baseline')
+        encoder_baseline = create_enhanced_edge_aware_encoder_fixed(config, mode='baseline')
         data_baseline = Data(x=x, edge_index=edge_index, edge_attr=edge_attr_baseline)
         
         with torch.no_grad():

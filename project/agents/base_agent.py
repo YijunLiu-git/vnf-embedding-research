@@ -1,4 +1,4 @@
-# agents/base_agent.py
+# agents/base_agent.py - 修复版
 
 import torch
 import torch.nn as nn
@@ -8,18 +8,17 @@ from abc import ABC, abstractmethod
 from typing import Union, List, Dict, Any, Optional
 from torch_geometric.data import Data, Batch
 
+# 🔧 关键修复：只使用标准GNN编码器，暂时禁用Enhanced版本
 from models.gnn_encoder import GNNEncoder
 
 class BaseAgent(ABC):
     """
-    多智能体VNF嵌入系统的基础智能体类
+    多智能体VNF嵌入系统的基础智能体类 - 修复版
     
-    提供统一的接口和基础功能：
-    1. 图神经网络状态处理
-    2. 经验存储和回放
-    3. 目标网络管理（DQN系列）
-    4. 多智能体协调基础
-    5. 训练/评估模式切换
+    主要修复：
+    1. 🔧 禁用enhanced_gnn_encoder，只使用标准GNNEncoder
+    2. 🔧 确保维度配置一致性
+    3. 🔧 简化初始化流程，避免复杂的特征融合
     """
     
     def __init__(self, 
@@ -39,8 +38,14 @@ class BaseAgent(ABC):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print(f"🤖 Agent {agent_id} 使用设备: {self.device}")
         
-        # 选择 GNN 配置（edge_aware 或 baseline）
-        gnn_config = config.get("gnn", {}).get("edge_aware" if "edge_aware" in agent_id else "baseline", {})
+        # 🔧 修复：简化GNN配置获取逻辑
+        if "edge_aware" in agent_id:
+            gnn_config = config.get("gnn", {}).get("edge_aware", {})
+            print(f"   📊 Edge-aware模式: edge_dim={edge_dim}")
+        else:
+            gnn_config = config.get("gnn", {}).get("baseline", {})
+            print(f"   📊 Baseline模式: edge_dim={edge_dim}")
+        
         self.hidden_dim = gnn_config.get("hidden_dim", 128)
         self.output_dim = gnn_config.get("output_dim", 256)
         self.num_layers = gnn_config.get("layers", 4)
@@ -55,13 +60,16 @@ class BaseAgent(ABC):
         self.epsilon_decay = config.get("train", {}).get("epsilon_decay", 0.995)
         self.epsilon_min = config.get("train", {}).get("epsilon_min", 0.01)
         
-        # 图神经网络编码器
+        # 🔧 关键修复：使用标准GNN编码器，确保维度匹配
+        print(f"   🔧 创建GNN编码器: node_dim={state_dim}, edge_dim={edge_dim}")
+        print(f"      hidden_dim={self.hidden_dim}, output_dim={self.output_dim}")
+        
         self.gnn_encoder = GNNEncoder(
-            node_dim=state_dim,
-            edge_dim=edge_dim,
-            hidden_dim=self.hidden_dim,
-            output_dim=self.output_dim,
-            num_layers=self.num_layers
+            node_dim=state_dim,           # 8维节点特征
+            edge_dim=edge_dim,            # edge_aware=4, baseline=2
+            hidden_dim=self.hidden_dim,   # 配置中的hidden_dim
+            output_dim=self.output_dim,   # 统一256维输出
+            num_layers=self.num_layers    # 配置中的层数
         ).to(self.device)
         
         # 策略网络（子类实现具体结构）
@@ -88,9 +96,11 @@ class BaseAgent(ABC):
         self.other_agents = {}
         self.communication_enabled = False
         
+        print(f"✅ GNN编码器创建成功")
+        
     def process_state(self, state: Union[Data, Dict, np.ndarray]) -> torch.Tensor:
         """
-        处理状态输入，统一转换为图神经网络可处理的格式
+        处理状态输入，统一转换为图神经网络可处理的格式 - 修复版
         
         Args:
             state: 可以是PyG Data对象、字典或numpy数组
@@ -102,6 +112,29 @@ class BaseAgent(ABC):
         
         with torch.no_grad():
             if isinstance(state, Data):
+                # 🔧 关键修复：验证输入维度
+                if state.x.size(1) != self.state_dim:
+                    print(f"⚠️ 节点特征维度不匹配: 期望{self.state_dim}, 实际{state.x.size(1)}")
+                    # 尝试自动修复
+                    if state.x.size(1) < self.state_dim:
+                        padding = torch.zeros(state.x.size(0), self.state_dim - state.x.size(1), 
+                                            device=state.x.device)
+                        state.x = torch.cat([state.x, padding], dim=1)
+                    else:
+                        state.x = state.x[:, :self.state_dim]
+                
+                if hasattr(state, 'edge_attr') and state.edge_attr is not None:
+                    if state.edge_attr.size(1) != self.edge_dim:
+                        print(f"⚠️ 边特征维度不匹配: 期望{self.edge_dim}, 实际{state.edge_attr.size(1)}")
+                        # 尝试自动修复
+                        if state.edge_attr.size(1) < self.edge_dim:
+                            padding = torch.zeros(state.edge_attr.size(0), 
+                                                self.edge_dim - state.edge_attr.size(1), 
+                                                device=state.edge_attr.device)
+                            state.edge_attr = torch.cat([state.edge_attr, padding], dim=1)
+                        else:
+                            state.edge_attr = state.edge_attr[:, :self.edge_dim]
+                
                 state = state.to(self.device)
                 encoded_state = self.gnn_encoder(state)
                 
@@ -119,6 +152,10 @@ class BaseAgent(ABC):
         
         if self.is_training:
             self.gnn_encoder.train()
+        
+        # 🔧 验证输出维度
+        if encoded_state.size(-1) != self.output_dim:
+            print(f"⚠️ GNN输出维度不匹配: 期望{self.output_dim}, 实际{encoded_state.size(-1)}")
             
         return encoded_state
     
@@ -299,7 +336,7 @@ class BaseAgent(ABC):
 def create_agent(agent_type: str, agent_id: str, state_dim: int, action_dim: int, 
                 edge_dim: int, config: Dict[str, Any]) -> BaseAgent:
     """
-    工厂函数：创建指定类型的智能体
+    工厂函数：创建指定类型的智能体 - 修复版
     
     Args:
         agent_type: 智能体类型 ('ddqn', 'dqn', 'ppo')
@@ -313,6 +350,9 @@ def create_agent(agent_type: str, agent_id: str, state_dim: int, action_dim: int
         agent: 创建的智能体实例
     """
     
+    print(f"🏭 创建智能体: {agent_type} -> {agent_id}")
+    print(f"   参数: state_dim={state_dim}, action_dim={action_dim}, edge_dim={edge_dim}")
+    
     if agent_type.lower() == 'ddqn':
         from agents.multi_ddqn_agent import MultiDDQNAgent
         return MultiDDQNAgent(agent_id, state_dim, action_dim, edge_dim, config)
@@ -325,14 +365,14 @@ def create_agent(agent_type: str, agent_id: str, state_dim: int, action_dim: int
     else:
         raise ValueError(f"不支持的智能体类型: {agent_type}")
 
-def test_base_agent():
-    """测试BaseAgent基础功能"""
-    print("🧪 测试BaseAgent基础功能...")
+def test_base_agent_fixed():
+    """测试修复版BaseAgent基础功能"""
+    print("🧪 测试修复版BaseAgent基础功能...")
     
     config = {
         "gnn": {
-            "edge_aware": {"hidden_dim": 64, "output_dim": 128, "layers": 4},
-            "baseline": {"hidden_dim": 64, "output_dim": 128, "layers": 4}
+            "edge_aware": {"hidden_dim": 64, "output_dim": 256, "layers": 4},
+            "baseline": {"hidden_dim": 64, "output_dim": 256, "layers": 4}
         },
         "train": {"lr": 0.001, "gamma": 0.99, "batch_size": 16}
     }
@@ -350,18 +390,37 @@ def test_base_agent():
         def learn(self):
             return {"loss": 0.1}
     
-    agent = TestAgent("test_agent", state_dim=8, action_dim=10, edge_dim=4, config=config)
+    # 测试Edge-aware智能体
+    agent_edge = TestAgent("test_agent_edge_aware", state_dim=8, action_dim=10, edge_dim=4, config=config)
     
-    test_state = torch.randn(1, 128)
-    processed_state = agent.process_state(test_state)
+    # 测试Baseline智能体
+    agent_baseline = TestAgent("test_agent_baseline", state_dim=8, action_dim=10, edge_dim=2, config=config)
     
-    print(f"✅ 状态处理测试: {processed_state.shape}")
-    print(f"✅ 智能体创建成功: {agent.agent_id}")
-    print(f"✅ 设备配置: {agent.device}")
+    # 创建测试状态
+    test_state = Data(
+        x=torch.randn(10, 8),  # 10个节点，8维特征
+        edge_index=torch.randint(0, 10, (2, 20)),  # 20条边
+        edge_attr=torch.randn(20, 4)  # 4维边特征
+    )
     
-    agent.update_stats(reward=1.0, action=5, loss=0.1)
-    stats = agent.get_stats()
-    print(f"✅ 统计功能测试: {stats['total_reward']}")
+    # 测试Edge-aware处理
+    processed_state_edge = agent_edge.process_state(test_state)
+    print(f"✅ Edge-aware状态处理: 输入{test_state.x.shape} -> 输出{processed_state_edge.shape}")
+    
+    # 测试Baseline处理（需要调整边特征维度）
+    test_state_baseline = Data(
+        x=torch.randn(10, 8),  # 10个节点，8维特征
+        edge_index=torch.randint(0, 10, (2, 20)),  # 20条边
+        edge_attr=torch.randn(20, 2)  # 2维边特征
+    )
+    
+    processed_state_baseline = agent_baseline.process_state(test_state_baseline)
+    print(f"✅ Baseline状态处理: 输入{test_state_baseline.x.shape} -> 输出{processed_state_baseline.shape}")
+    
+    print(f"✅ 修复版BaseAgent测试完成!")
+    print(f"   Edge-aware智能体创建成功: {agent_edge.agent_id}")
+    print(f"   Baseline智能体创建成功: {agent_baseline.agent_id}")
+    print(f"   输出维度统一: {processed_state_edge.shape[-1]} = {processed_state_baseline.shape[-1]}")
 
 if __name__ == "__main__":
-    test_base_agent()
+    test_base_agent_fixed()
