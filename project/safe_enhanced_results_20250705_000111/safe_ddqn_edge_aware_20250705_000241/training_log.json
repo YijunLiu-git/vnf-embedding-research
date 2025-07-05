@@ -1,0 +1,902 @@
+[
+  {
+    "episode": 1,
+    "timestamp": "2025-07-05T00:02:46.849695",
+    "stats": {
+      "total_reward": 177.31091262531237,
+      "steps": 4,
+      "success": true,
+      "sar": 1.0,
+      "splat": 44.86878534365311,
+      "info": {
+        "success": true,
+        "paths": [
+          {
+            "delay": 47.134358632571086,
+            "bandwidth": 60.33926871475862,
+            "hops": 2,
+            "jitter": 0.1273960834739685,
+            "loss": 0.004379756318458106,
+            "quality_score": 0.7766025049709726,
+            "reliability": 0.9956202436815419
+          },
+          {
+            "delay": 63.00586093831171,
+            "bandwidth": 39.29074207716691,
+            "hops": 1,
+            "jitter": 0.11047987716916412,
+            "loss": 0.017796851977595618,
+            "quality_score": 0.6809539521670926,
+            "reliability": 0.9822031480224044
+          },
+          {
+            "delay": 24.4661364600765,
+            "bandwidth": 42.046649541776716,
+            "hops": 2,
+            "jitter": 0.1522357057250157,
+            "loss": 0.018537049266683425,
+            "quality_score": 0.7823007396952448,
+            "reliability": 0.9814629507333166
+          }
+        ],
+        "total_delay": 134.60635603095932,
+        "min_bandwidth": 39.29074207716691,
+        "resource_utilization": 0.004403759017733161,
+        "avg_jitter": 0.1300372221227161,
+        "avg_loss": 0.01357121918757905,
+        "is_edge_aware": true,
+        "path_quality_score": 0.7466190656111035,
+        "network_efficiency": 0.9325396825396826,
+        "congestion_level": 0.06746031746031746,
+        "enhanced_features_used": true,
+        "total_vnfs": 4,
+        "deployed_vnfs": 4,
+        "vnf_requests": [
+          {
+            "cpu": 0.03703008230812957,
+            "memory": 0.03882748780111324,
+            "bandwidth": 3.695361168288223,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.022780000253084888,
+            "memory": 0.023014835786798114,
+            "bandwidth": 2.789646015227318,
+            "vnf_type": 1
+          },
+          {
+            "cpu": 0.034365270623447144,
+            "memory": 0.014068127985290616,
+            "bandwidth": 0.8707950713857215,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.037104843772053066,
+            "memory": 0.0352083957801272,
+            "bandwidth": 1.5348397221481447,
+            "vnf_type": 2
+          }
+        ],
+        "base_reward": 82.842817027376,
+        "completion_bonus": 20.0,
+        "edge_aware_bonus": 38.46809559793636,
+        "final_reward": 141.31091262531237,
+        "sar": 1.0,
+        "splat": 44.86878534365311,
+        "embedding_completed": true,
+        "total_steps": 4
+      },
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 2,
+    "timestamp": "2025-07-05T00:03:05.960139",
+    "stats": {
+      "total_reward": 175.73739221417995,
+      "steps": 4,
+      "success": true,
+      "sar": 1.0,
+      "splat": 49.147164288505536,
+      "info": {
+        "success": true,
+        "paths": [
+          {
+            "delay": 52.853939049539726,
+            "bandwidth": 31.431113839098135,
+            "hops": 2,
+            "jitter": 0.24557295358801307,
+            "loss": 0.05537255381140593,
+            "quality_score": 0.6700082526869537,
+            "reliability": 0.9446274461885941
+          },
+          {
+            "delay": 36.0813617998741,
+            "bandwidth": 56.75236664092944,
+            "hops": 2,
+            "jitter": 0.25185613473682655,
+            "loss": 0.031918689093866415,
+            "quality_score": 0.7820276599850053,
+            "reliability": 0.9680813109061336
+          },
+          {
+            "delay": 58.50619201610278,
+            "bandwidth": 36.316490998643175,
+            "hops": 2,
+            "jitter": 0.5164460014788523,
+            "loss": 0.07537146335924871,
+            "quality_score": 0.6512564683894222,
+            "reliability": 0.9246285366407513
+          }
+        ],
+        "total_delay": 147.4414928655166,
+        "min_bandwidth": 31.431113839098135,
+        "resource_utilization": 0.002528932320459052,
+        "avg_jitter": 0.3379583632678973,
+        "avg_loss": 0.054220902088173685,
+        "is_edge_aware": true,
+        "path_quality_score": 0.7010974603537937,
+        "network_efficiency": 0.9285714285714286,
+        "congestion_level": 0.07142857142857142,
+        "enhanced_features_used": true,
+        "total_vnfs": 4,
+        "deployed_vnfs": 4,
+        "vnf_requests": [
+          {
+            "cpu": 0.01453509249066042,
+            "memory": 0.0359934456793152,
+            "bandwidth": 3.343032225153015,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.01340295336416846,
+            "memory": 0.04710251180982223,
+            "bandwidth": 3.174018443777666,
+            "vnf_type": 1
+          },
+          {
+            "cpu": 0.03415431122204621,
+            "memory": 0.03670751949214601,
+            "bandwidth": 1.4007094785437566,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.0132974932267327,
+            "memory": 0.021807240101634966,
+            "bandwidth": 1.1442058572460656,
+            "vnf_type": 3
+          }
+        ],
+        "base_reward": 82.50115729281836,
+        "completion_bonus": 20.0,
+        "edge_aware_bonus": 37.236234921361586,
+        "final_reward": 139.73739221417995,
+        "sar": 1.0,
+        "splat": 49.147164288505536,
+        "embedding_completed": true,
+        "total_steps": 4
+      },
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 3,
+    "timestamp": "2025-07-05T00:03:24.868849",
+    "stats": {
+      "total_reward": 182.21240467591838,
+      "steps": 5,
+      "success": true,
+      "sar": 1.0,
+      "splat": 61.90852351999073,
+      "info": {
+        "success": true,
+        "paths": [
+          {
+            "delay": 59.77630289153925,
+            "bandwidth": 62.35677374753643,
+            "hops": 1,
+            "jitter": 0.08464839157903939,
+            "loss": 0.005026108011608965,
+            "quality_score": 0.7515574090733487,
+            "reliability": 0.994973891988391
+          },
+          {
+            "delay": 89.21367653314891,
+            "bandwidth": 24.536137992857554,
+            "hops": 3,
+            "jitter": 0.4650682330489733,
+            "loss": 0.0367121236686383,
+            "quality_score": 0.5586897872267211,
+            "reliability": 0.9632878763313617
+          },
+          {
+            "delay": 87.81673652581482,
+            "bandwidth": 66.7199507489462,
+            "hops": 2,
+            "jitter": 0.1248486881818559,
+            "loss": 0.01425788436764519,
+            "quality_score": 0.6879867227202606,
+            "reliability": 0.9857421156323548
+          },
+          {
+            "delay": 10.827378129459966,
+            "bandwidth": 92.08308708039901,
+            "hops": 1,
+            "jitter": 0.012151834040722407,
+            "loss": 0.0005538280196266676,
+            "quality_score": 0.9524870506098306,
+            "reliability": 0.9994461719803733
+          }
+        ],
+        "total_delay": 247.63409407996292,
+        "min_bandwidth": 24.536137992857554,
+        "resource_utilization": 0.008845987757681261,
+        "avg_jitter": 0.17167928671264776,
+        "avg_loss": 0.01413748601687978,
+        "is_edge_aware": true,
+        "path_quality_score": 0.7376802424075403,
+        "network_efficiency": 0.9126984126984127,
+        "congestion_level": 0.0873015873015873,
+        "enhanced_features_used": true,
+        "total_vnfs": 5,
+        "deployed_vnfs": 5,
+        "vnf_requests": [
+          {
+            "cpu": 0.051497808165482856,
+            "memory": 0.04605635361494843,
+            "bandwidth": 1.8249065987382864,
+            "vnf_type": 1
+          },
+          {
+            "cpu": 0.048241109137601663,
+            "memory": 0.032081620344423425,
+            "bandwidth": 2.6275829337104284,
+            "vnf_type": 3
+          },
+          {
+            "cpu": 0.021269172948096573,
+            "memory": 0.016519628669086697,
+            "bandwidth": 3.3787344447879284,
+            "vnf_type": 3
+          },
+          {
+            "cpu": 0.0321014380112422,
+            "memory": 0.017994612386590725,
+            "bandwidth": 3.8807349143149836,
+            "vnf_type": 1
+          },
+          {
+            "cpu": 0.03608492987052027,
+            "memory": 0.01356318150199722,
+            "bandwidth": 3.608870187984953,
+            "vnf_type": 2
+          }
+        ],
+        "base_reward": 75.95383951030725,
+        "completion_bonus": 20.0,
+        "edge_aware_bonus": 38.258565165611124,
+        "final_reward": 134.21240467591838,
+        "sar": 1.0,
+        "splat": 61.90852351999073,
+        "embedding_completed": true,
+        "total_steps": 5
+      },
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 4,
+    "timestamp": "2025-07-05T00:03:42.874048",
+    "stats": {
+      "total_reward": 154.9959292355756,
+      "steps": 3,
+      "success": true,
+      "sar": 1.0,
+      "splat": 68.10254753045074,
+      "info": {
+        "success": true,
+        "paths": [
+          {
+            "delay": 42.23368602583721,
+            "bandwidth": 31.404231936507088,
+            "hops": 3,
+            "jitter": 0.36200971963259015,
+            "loss": 0.06975085610556342,
+            "quality_score": 0.687520719159702,
+            "reliability": 0.9302491438944366
+          },
+          {
+            "delay": 93.97140903506426,
+            "bandwidth": 33.169115552801195,
+            "hops": 4,
+            "jitter": 0.29175267639609326,
+            "loss": 0.03884502540500323,
+            "quality_score": 0.5746706516169977,
+            "reliability": 0.9611549745949968
+          }
+        ],
+        "total_delay": 136.20509506090147,
+        "min_bandwidth": 31.404231936507088,
+        "resource_utilization": 0.004102372322199425,
+        "avg_jitter": 0.3268811980143417,
+        "avg_loss": 0.054297940755283325,
+        "is_edge_aware": true,
+        "path_quality_score": 0.6310956853883498,
+        "network_efficiency": 0.9503968253968254,
+        "congestion_level": 0.0496031746031746,
+        "enhanced_features_used": true,
+        "total_vnfs": 3,
+        "deployed_vnfs": 3,
+        "vnf_requests": [
+          {
+            "cpu": 0.01019682829304164,
+            "memory": 0.005794446357948968,
+            "bandwidth": 3.549449028167293,
+            "vnf_type": 1
+          },
+          {
+            "cpu": 0.03710278761148995,
+            "memory": 0.013078295259968493,
+            "bandwidth": 2.0556116867110603,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.021639246108575594,
+            "memory": 0.03231919460920309,
+            "bandwidth": 1.3692090064571705,
+            "vnf_type": 1
+          }
+        ],
+        "base_reward": 74.36409489288798,
+        "completion_bonus": 20.0,
+        "edge_aware_bonus": 36.631834342687625,
+        "final_reward": 130.9959292355756,
+        "sar": 1.0,
+        "splat": 68.10254753045074,
+        "embedding_completed": true,
+        "total_steps": 3
+      },
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 5,
+    "timestamp": "2025-07-05T00:04:02.042459",
+    "stats": {
+      "total_reward": 169.05954747660238,
+      "steps": 4,
+      "success": true,
+      "sar": 1.0,
+      "splat": 52.45216687998583,
+      "info": {
+        "success": true,
+        "paths": [
+          {
+            "delay": 40.84941048236955,
+            "bandwidth": 36.51961569548878,
+            "hops": 2,
+            "jitter": 0.34161372817658486,
+            "loss": 0.04031806551578887,
+            "quality_score": 0.7134155442509981,
+            "reliability": 0.9596819344842111
+          },
+          {
+            "delay": 69.08408025768685,
+            "bandwidth": 36.316490998643175,
+            "hops": 2,
+            "jitter": 0.3675299731928422,
+            "loss": 0.07073630695481148,
+            "quality_score": 0.6321589358382337,
+            "reliability": 0.9292636930451885
+          },
+          {
+            "delay": 47.42300989990108,
+            "bandwidth": 24.036776646154784,
+            "hops": 1,
+            "jitter": 0.11192764723057734,
+            "loss": 0.011333401245945174,
+            "quality_score": 0.6836572906026276,
+            "reliability": 0.9886665987540548
+          }
+        ],
+        "total_delay": 157.3565006399575,
+        "min_bandwidth": 24.036776646154784,
+        "resource_utilization": 0.008223867990225248,
+        "avg_jitter": 0.2736904495333348,
+        "avg_loss": 0.04079592457218184,
+        "is_edge_aware": true,
+        "path_quality_score": 0.6764105902306198,
+        "network_efficiency": 0.9325396825396826,
+        "congestion_level": 0.06746031746031746,
+        "enhanced_features_used": true,
+        "total_vnfs": 4,
+        "deployed_vnfs": 4,
+        "vnf_requests": [
+          {
+            "cpu": 0.027798549823403174,
+            "memory": 0.00968469357692961,
+            "bandwidth": 2.104123239454154,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.031238116041501673,
+            "memory": 0.03962659128252585,
+            "bandwidth": 2.4675741074587303,
+            "vnf_type": 1
+          },
+          {
+            "cpu": 0.030159946266526485,
+            "memory": 0.041845572902780036,
+            "bandwidth": 0.5888284421587671,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.03229051979851272,
+            "memory": 0.04516905933202874,
+            "bandwidth": 0.8036663432269604,
+            "vnf_type": 3
+          }
+        ],
+        "base_reward": 75.99562138627569,
+        "completion_bonus": 20.0,
+        "edge_aware_bonus": 37.06392609032668,
+        "final_reward": 133.05954747660238,
+        "sar": 1.0,
+        "splat": 52.45216687998583,
+        "embedding_completed": true,
+        "total_steps": 4
+      },
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 6,
+    "timestamp": "2025-07-05T00:04:24.696049",
+    "stats": {
+      "total_reward": 169.80485945545584,
+      "steps": 4,
+      "success": true,
+      "sar": 1.0,
+      "splat": 68.80492588431615,
+      "info": {
+        "success": true,
+        "paths": [
+          {
+            "delay": 86.5226396584788,
+            "bandwidth": 63.03864483698702,
+            "hops": 2,
+            "jitter": 0.056369150080822626,
+            "loss": 0.0030512243584449594,
+            "quality_score": 0.6881198796355043,
+            "reliability": 0.996948775641555
+          },
+          {
+            "delay": 46.361068950516746,
+            "bandwidth": 32.50188436579825,
+            "hops": 1,
+            "jitter": 0.27559049097086075,
+            "loss": 0.021557497149665816,
+            "quality_score": 0.6978611697544695,
+            "reliability": 0.9784425028503342
+          },
+          {
+            "delay": 73.53106904395293,
+            "bandwidth": 75.61490863745587,
+            "hops": 2,
+            "jitter": 0.112410352553321,
+            "loss": 0.005479317846274756,
+            "quality_score": 0.749069389527742,
+            "reliability": 0.9945206821537252
+          }
+        ],
+        "total_delay": 206.41477765294846,
+        "min_bandwidth": 32.50188436579825,
+        "resource_utilization": 0.009220222757252554,
+        "avg_jitter": 0.14812333120166812,
+        "avg_loss": 0.010029346451461843,
+        "is_edge_aware": true,
+        "path_quality_score": 0.7116834796392387,
+        "network_efficiency": 0.9325396825396826,
+        "congestion_level": 0.06746031746031746,
+        "enhanced_features_used": true,
+        "total_vnfs": 4,
+        "deployed_vnfs": 4,
+        "vnf_requests": [
+          {
+            "cpu": 0.03413941985279904,
+            "memory": 0.03637187112233241,
+            "bandwidth": 2.287077816547597,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.025375305995865002,
+            "memory": 0.035549665519722495,
+            "bandwidth": 1.9192627983464687,
+            "vnf_type": 3
+          },
+          {
+            "cpu": 0.04569805438157619,
+            "memory": 0.00899969444588721,
+            "bandwidth": 1.3476759807949685,
+            "vnf_type": 1
+          },
+          {
+            "cpu": 0.03910383260442232,
+            "memory": 0.005359968782893515,
+            "bandwidth": 1.3666188444203369,
+            "vnf_type": 2
+          }
+        ],
+        "base_reward": 76.03547557695677,
+        "completion_bonus": 20.0,
+        "edge_aware_bonus": 37.76938387849906,
+        "final_reward": 133.80485945545584,
+        "sar": 1.0,
+        "splat": 68.80492588431615,
+        "embedding_completed": true,
+        "total_steps": 4
+      },
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 7,
+    "timestamp": "2025-07-05T00:04:46.009654",
+    "stats": {
+      "total_reward": 168.9075234075452,
+      "steps": 4,
+      "success": true,
+      "sar": 1.0,
+      "splat": 60.41530302547316,
+      "info": {
+        "success": true,
+        "paths": [
+          {
+            "delay": 71.63281371828442,
+            "bandwidth": 42.046649541776716,
+            "hops": 3,
+            "jitter": 0.16977429857574838,
+            "loss": 0.025993931458137443,
+            "quality_score": 0.6614454381782595,
+            "reliability": 0.9740060685418626
+          },
+          {
+            "delay": 49.3532731498411,
+            "bandwidth": 29.15686067564044,
+            "hops": 1,
+            "jitter": 0.2871702311185487,
+            "loss": 0.04295353208274488,
+            "quality_score": 0.675136099944933,
+            "reliability": 0.9570464679172551
+          },
+          {
+            "delay": 60.259822208293954,
+            "bandwidth": 28.823317929032186,
+            "hops": 2,
+            "jitter": 0.36548029319569764,
+            "loss": 0.032691863516052244,
+            "quality_score": 0.6469819685192021,
+            "reliability": 0.9673081364839478
+          }
+        ],
+        "total_delay": 181.24590907641948,
+        "min_bandwidth": 28.823317929032186,
+        "resource_utilization": 0.01007035789108823,
+        "avg_jitter": 0.27414160762999823,
+        "avg_loss": 0.033879775685644854,
+        "is_edge_aware": true,
+        "path_quality_score": 0.6611878355474649,
+        "network_efficiency": 0.9285714285714286,
+        "congestion_level": 0.07142857142857142,
+        "enhanced_features_used": true,
+        "total_vnfs": 4,
+        "deployed_vnfs": 4,
+        "vnf_requests": [
+          {
+            "cpu": 0.027300011741860485,
+            "memory": 0.03123431391304897,
+            "bandwidth": 0.970855798077802,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.04079777899164664,
+            "memory": 0.03428937769201606,
+            "bandwidth": 0.9295956095064251,
+            "vnf_type": 1
+          },
+          {
+            "cpu": 0.028714681589084207,
+            "memory": 0.011184010029589405,
+            "bandwidth": 3.33721366575855,
+            "vnf_type": 3
+          },
+          {
+            "cpu": 0.016891513037958914,
+            "memory": 0.031894818328447636,
+            "bandwidth": 3.354426895760278,
+            "vnf_type": 1
+          }
+        ],
+        "base_reward": 75.80281431564353,
+        "completion_bonus": 20.0,
+        "edge_aware_bonus": 37.104709091901675,
+        "final_reward": 132.9075234075452,
+        "sar": 1.0,
+        "splat": 60.41530302547316,
+        "embedding_completed": true,
+        "total_steps": 4
+      },
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 8,
+    "timestamp": "2025-07-05T00:05:08.102903",
+    "stats": {
+      "total_reward": 180.6434100354616,
+      "steps": 5,
+      "success": true,
+      "sar": 1.0,
+      "splat": 70.03436392089353,
+      "info": {
+        "success": true,
+        "paths": [
+          {
+            "delay": 86.52000112769686,
+            "bandwidth": 33.40734541008967,
+            "hops": 2,
+            "jitter": 0.2616068588791343,
+            "loss": 0.03476785687871975,
+            "quality_score": 0.5963237292872008,
+            "reliability": 0.9652321431212803
+          },
+          {
+            "delay": 41.11246634019973,
+            "bandwidth": 63.03864483698702,
+            "hops": 1,
+            "jitter": 0.036156375574875825,
+            "loss": 0.0018654640856414773,
+            "quality_score": 0.8028095519932806,
+            "reliability": 0.9981345359143585
+          },
+          {
+            "delay": 80.54904146230102,
+            "bandwidth": 31.304247589326557,
+            "hops": 2,
+            "jitter": 0.15843565901059548,
+            "loss": 0.016484709550744103,
+            "quality_score": 0.6156051760919168,
+            "reliability": 0.9835152904492559
+          },
+          {
+            "delay": 71.95594675337651,
+            "bandwidth": 31.304247589326557,
+            "hops": 2,
+            "jitter": 0.3619017973787151,
+            "loss": 0.060159529237755804,
+            "quality_score": 0.6158468214233997,
+            "reliability": 0.9398404707622442
+          }
+        ],
+        "total_delay": 280.1374556835741,
+        "min_bandwidth": 31.304247589326557,
+        "resource_utilization": 0.013457527545001931,
+        "avg_jitter": 0.20452517271083018,
+        "avg_loss": 0.028319389938215284,
+        "is_edge_aware": true,
+        "path_quality_score": 0.6576463196989495,
+        "network_efficiency": 0.9265873015873016,
+        "congestion_level": 0.0734126984126984,
+        "enhanced_features_used": true,
+        "total_vnfs": 5,
+        "deployed_vnfs": 5,
+        "vnf_requests": [
+          {
+            "cpu": 0.022773105716361753,
+            "memory": 0.007670505048433366,
+            "bandwidth": 0.5877426769765621,
+            "vnf_type": 3
+          },
+          {
+            "cpu": 0.05577452343277719,
+            "memory": 0.045324994390407665,
+            "bandwidth": 2.19102875955063,
+            "vnf_type": 1
+          },
+          {
+            "cpu": 0.033597301323179084,
+            "memory": 0.03848055266225365,
+            "bandwidth": 3.9185111526154466,
+            "vnf_type": 3
+          },
+          {
+            "cpu": 0.05210305362883865,
+            "memory": 0.04502881437505866,
+            "bandwidth": 1.695700236020069,
+            "vnf_type": 3
+          },
+          {
+            "cpu": 0.04433799289235316,
+            "memory": 0.011834814275361726,
+            "bandwidth": 3.157329034169111,
+            "vnf_type": 1
+          }
+        ],
+        "base_reward": 76.13830110180007,
+        "completion_bonus": 20.0,
+        "edge_aware_bonus": 36.50510893366153,
+        "final_reward": 132.6434100354616,
+        "sar": 1.0,
+        "splat": 70.03436392089353,
+        "embedding_completed": true,
+        "total_steps": 5
+      },
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 9,
+    "timestamp": "2025-07-05T00:05:27.888136",
+    "stats": {
+      "total_reward": 157.23576738007955,
+      "steps": 3,
+      "success": true,
+      "sar": 1.0,
+      "splat": 56.95584290478909,
+      "info": {
+        "success": true,
+        "paths": [
+          {
+            "delay": 55.11136231302795,
+            "bandwidth": 51.433512818409255,
+            "hops": 2,
+            "jitter": 0.17871861416868545,
+            "loss": 0.026157658634757164,
+            "quality_score": 0.7258093341062788,
+            "reliability": 0.9738423413652428
+          },
+          {
+            "delay": 58.80032349655022,
+            "bandwidth": 28.823317929032186,
+            "hops": 2,
+            "jitter": 0.37369212459766743,
+            "loss": 0.03753409559186793,
+            "quality_score": 0.6488495724197378,
+            "reliability": 0.9624659044081321
+          }
+        ],
+        "total_delay": 113.91168580957817,
+        "min_bandwidth": 28.823317929032186,
+        "resource_utilization": 0.009471521362547785,
+        "avg_jitter": 0.2762053693831764,
+        "avg_loss": 0.03184587711331255,
+        "is_edge_aware": true,
+        "path_quality_score": 0.6873294532630083,
+        "network_efficiency": 0.9484126984126984,
+        "congestion_level": 0.051587301587301584,
+        "enhanced_features_used": true,
+        "total_vnfs": 3,
+        "deployed_vnfs": 3,
+        "vnf_requests": [
+          {
+            "cpu": 0.04828991446990289,
+            "memory": 0.018126268454438512,
+            "bandwidth": 2.0975357493536384,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.03505027646565513,
+            "memory": 0.044177431811003906,
+            "bandwidth": 0.6586812153443333,
+            "vnf_type": 1
+          },
+          {
+            "cpu": 0.03764304272399208,
+            "memory": 0.028473773141017525,
+            "bandwidth": 1.9916347872802733,
+            "vnf_type": 1
+          }
+        ],
+        "base_reward": 75.77886085450191,
+        "completion_bonus": 20.0,
+        "edge_aware_bonus": 37.45690652557762,
+        "final_reward": 133.23576738007955,
+        "sar": 1.0,
+        "splat": 56.95584290478909,
+        "embedding_completed": true,
+        "total_steps": 3
+      },
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 10,
+    "timestamp": "2025-07-05T00:05:49.744661",
+    "stats": {
+      "total_reward": 170.49670670912283,
+      "steps": 4,
+      "success": true,
+      "sar": 1.0,
+      "splat": 53.78278612232007,
+      "info": {
+        "success": true,
+        "paths": [
+          {
+            "delay": 71.95594675337651,
+            "bandwidth": 31.304247589326557,
+            "hops": 2,
+            "jitter": 0.3619017973787151,
+            "loss": 0.060159529237755804,
+            "quality_score": 0.6158468214233997,
+            "reliability": 0.9398404707622442
+          },
+          {
+            "delay": 39.17990544188902,
+            "bandwidth": 81.1282164818705,
+            "hops": 2,
+            "jitter": 0.09080571191413085,
+            "loss": 0.004664526388522883,
+            "quality_score": 0.8498391912068315,
+            "reliability": 0.9953354736114771
+          },
+          {
+            "delay": 50.212506171694685,
+            "bandwidth": 75.61490863745587,
+            "hops": 2,
+            "jitter": 0.09271206496533688,
+            "loss": 0.005821261611525519,
+            "quality_score": 0.8080511450823318,
+            "reliability": 0.9941787383884745
+          }
+        ],
+        "total_delay": 161.3483583669602,
+        "min_bandwidth": 31.304247589326557,
+        "resource_utilization": 0.018104331918833715,
+        "avg_jitter": 0.1818065247527276,
+        "avg_loss": 0.02354843907926807,
+        "is_edge_aware": true,
+        "path_quality_score": 0.7579123859041877,
+        "network_efficiency": 0.9285714285714286,
+        "congestion_level": 0.07142857142857142,
+        "enhanced_features_used": true,
+        "total_vnfs": 4,
+        "deployed_vnfs": 4,
+        "vnf_requests": [
+          {
+            "cpu": 0.03862724712275814,
+            "memory": 0.011796376012878852,
+            "bandwidth": 2.38156791472272,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.023803919794428786,
+            "memory": 0.03443384946574981,
+            "bandwidth": 3.0737623800996405,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.014392559529279116,
+            "memory": 0.017336113571459345,
+            "bandwidth": 3.244129264916297,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.012311626814627899,
+            "memory": 0.04127185204161953,
+            "bandwidth": 1.6070670809812886,
+            "vnf_type": 3
+          }
+        ],
+        "base_reward": 76.12417327675335,
+        "completion_bonus": 20.0,
+        "edge_aware_bonus": 38.37253343236947,
+        "final_reward": 134.49670670912283,
+        "sar": 1.0,
+        "splat": 53.78278612232007,
+        "embedding_completed": true,
+        "total_steps": 4
+      },
+      "scenario": "normal_operation"
+    }
+  }
+]

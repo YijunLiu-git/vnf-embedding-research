@@ -1,0 +1,918 @@
+[
+  {
+    "episode": 1,
+    "timestamp": "2025-07-04T23:38:47.227519",
+    "stats": {
+      "total_reward": 169.64625111293958,
+      "steps": 5,
+      "success": true,
+      "sar": 1.0,
+      "splat": 107.15051916798024,
+      "jitter": 0.0,
+      "loss": 0.0,
+      "info": {
+        "success": true,
+        "paths": [
+          {
+            "delay": 36.9032358520763,
+            "bandwidth": 25.863127984776078,
+            "hops": 1
+          },
+          {
+            "delay": 136.98073825065939,
+            "bandwidth": 40.75115441339249,
+            "hops": 3
+          },
+          {
+            "delay": 156.32813455215938,
+            "bandwidth": 40.75115441339249,
+            "hops": 3
+          },
+          {
+            "delay": 98.3899680170259,
+            "bandwidth": 55.8632862877718,
+            "hops": 4
+          }
+        ],
+        "total_delay": 428.60207667192094,
+        "min_bandwidth": 25.863127984776078,
+        "resource_utilization": 0.0067068383768346335,
+        "avg_jitter": 0.0,
+        "avg_loss": 0.0,
+        "pressure_level": "medium",
+        "is_edge_aware": true,
+        "total_vnfs": 5,
+        "deployed_vnfs": 5,
+        "vnf_requests": [
+          {
+            "cpu": 0.012370072917811205,
+            "memory": 0.02717379162279264,
+            "bandwidth": 3.785275076037497,
+            "vnf_type": 1
+          },
+          {
+            "cpu": 0.041631274149597164,
+            "memory": 0.048215558938713605,
+            "bandwidth": 3.060613073800029,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.027081204746664624,
+            "memory": 0.04224791232881293,
+            "bandwidth": 2.8306305191160535,
+            "vnf_type": 3
+          },
+          {
+            "cpu": 0.03043469115980743,
+            "memory": 0.04016135034057063,
+            "bandwidth": 1.6388923306719718,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.04234934849210053,
+            "memory": 0.022976335553460184,
+            "bandwidth": 3.9240777571668115,
+            "vnf_type": 2
+          }
+        ],
+        "adaptive_weights": {
+          "sar_weight": 0.35,
+          "latency_weight": 0.25,
+          "efficiency_weight": 0.25,
+          "quality_weight": 0.15
+        },
+        "base_reward": 74.1915270228442,
+        "completion_bonus": 25.0,
+        "efficiency_bonus": 1.3698331088330127,
+        "final_reward": 100.5613601316772,
+        "sar": 1.0,
+        "splat": 107.15051916798024,
+        "adaptive_weights_applied": true,
+        "embedding_completed": true,
+        "total_steps": 5,
+        "adaptive_reward_applied": true
+      },
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 2,
+    "timestamp": "2025-07-04T23:38:47.337097",
+    "stats": {
+      "total_reward": 179.58993744267173,
+      "steps": 5,
+      "success": true,
+      "sar": 1.0,
+      "splat": 91.36555381148446,
+      "jitter": 0.0,
+      "loss": 0.0,
+      "info": {
+        "success": true,
+        "paths": [
+          {
+            "delay": 145.28599823920513,
+            "bandwidth": 39.98169055070787,
+            "hops": 3
+          },
+          {
+            "delay": 72.76714969711384,
+            "bandwidth": 38.3031893912586,
+            "hops": 2
+          },
+          {
+            "delay": 49.452319005811454,
+            "bandwidth": 75.93189084711474,
+            "hops": 2
+          },
+          {
+            "delay": 97.95674830380742,
+            "bandwidth": 64.08486804236033,
+            "hops": 2
+          }
+        ],
+        "total_delay": 365.46221524593784,
+        "min_bandwidth": 38.3031893912586,
+        "resource_utilization": 0.015099666164371427,
+        "avg_jitter": 0.0,
+        "avg_loss": 0.0,
+        "pressure_level": "medium",
+        "is_edge_aware": true,
+        "total_vnfs": 5,
+        "deployed_vnfs": 5,
+        "vnf_requests": [
+          {
+            "cpu": 0.016310926741164463,
+            "memory": 0.03303909914161844,
+            "bandwidth": 1.0260173203214782,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.011475600998035154,
+            "memory": 0.046086845245448975,
+            "bandwidth": 2.0710175455927513,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.04190891136600162,
+            "memory": 0.034242876363203334,
+            "bandwidth": 0.7516034616641437,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.05342444760838313,
+            "memory": 0.026377633851132346,
+            "bandwidth": 3.851892097897875,
+            "vnf_type": 1
+          },
+          {
+            "cpu": 0.04412966055027639,
+            "memory": 0.04963548846553605,
+            "bandwidth": 2.7338351339720752,
+            "vnf_type": 2
+          }
+        ],
+        "adaptive_weights": {
+          "sar_weight": 0.35,
+          "latency_weight": 0.25,
+          "efficiency_weight": 0.25,
+          "quality_weight": 0.15
+        },
+        "base_reward": 83.50498330821857,
+        "completion_bonus": 25.0,
+        "efficiency_bonus": 1.9939343861040228,
+        "final_reward": 110.49891769432259,
+        "sar": 1.0,
+        "splat": 91.36555381148446,
+        "adaptive_weights_applied": true,
+        "embedding_completed": true,
+        "total_steps": 5,
+        "adaptive_reward_applied": true
+      },
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 3,
+    "timestamp": "2025-07-04T23:38:47.436967",
+    "stats": {
+      "total_reward": 169.06481896073197,
+      "steps": 4,
+      "success": true,
+      "sar": 1.0,
+      "splat": 60.89965519130533,
+      "jitter": 0.0,
+      "loss": 0.0,
+      "info": {
+        "success": true,
+        "paths": [
+          {
+            "delay": 54.01880679260236,
+            "bandwidth": 31.499251021928195,
+            "hops": 2
+          },
+          {
+            "delay": 24.72126559348016,
+            "bandwidth": 33.75037484079482,
+            "hops": 2
+          },
+          {
+            "delay": 103.95889318783347,
+            "bandwidth": 33.75037484079482,
+            "hops": 3
+          }
+        ],
+        "total_delay": 182.69896557391598,
+        "min_bandwidth": 31.499251021928195,
+        "resource_utilization": 0.008588204232931645,
+        "avg_jitter": 0.0,
+        "avg_loss": 0.0,
+        "pressure_level": "medium",
+        "is_edge_aware": true,
+        "total_vnfs": 4,
+        "deployed_vnfs": 4,
+        "vnf_requests": [
+          {
+            "cpu": 0.03725805686471638,
+            "memory": 0.011583004706680687,
+            "bandwidth": 1.2424556826034712,
+            "vnf_type": 3
+          },
+          {
+            "cpu": 0.05802704571576995,
+            "memory": 0.005997885635646756,
+            "bandwidth": 3.9989344491448278,
+            "vnf_type": 3
+          },
+          {
+            "cpu": 0.04066518266465463,
+            "memory": 0.006455995224740124,
+            "bandwidth": 2.088646728470832,
+            "vnf_type": 1
+          },
+          {
+            "cpu": 0.018882551343548215,
+            "memory": 0.0363188741300261,
+            "bandwidth": 1.1344924536069758,
+            "vnf_type": 1
+          }
+        ],
+        "adaptive_weights": {
+          "sar_weight": 0.35,
+          "latency_weight": 0.25,
+          "efficiency_weight": 0.25,
+          "quality_weight": 0.15
+        },
+        "base_reward": 90.59607687831326,
+        "completion_bonus": 25.0,
+        "efficiency_bonus": 1.6521096021546426,
+        "final_reward": 117.2481864804679,
+        "sar": 1.0,
+        "splat": 60.89965519130533,
+        "adaptive_weights_applied": true,
+        "embedding_completed": true,
+        "total_steps": 4,
+        "adaptive_reward_applied": true
+      },
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 4,
+    "timestamp": "2025-07-04T23:38:47.535381",
+    "stats": {
+      "total_reward": 154.59707691763782,
+      "steps": 4,
+      "success": true,
+      "sar": 1.0,
+      "splat": 100.98580081396402,
+      "jitter": 0.0,
+      "loss": 0.0,
+      "info": {
+        "success": true,
+        "paths": [
+          {
+            "delay": 165.44473634110432,
+            "bandwidth": 40.75115441339249,
+            "hops": 3
+          },
+          {
+            "delay": 86.65267149334407,
+            "bandwidth": 73.69431077590404,
+            "hops": 2
+          },
+          {
+            "delay": 50.859994607443646,
+            "bandwidth": 65.08165718920141,
+            "hops": 2
+          }
+        ],
+        "total_delay": 302.95740244189204,
+        "min_bandwidth": 40.75115441339249,
+        "resource_utilization": 0.012886927078228473,
+        "avg_jitter": 0.0,
+        "avg_loss": 0.0,
+        "pressure_level": "medium",
+        "is_edge_aware": true,
+        "total_vnfs": 4,
+        "deployed_vnfs": 4,
+        "vnf_requests": [
+          {
+            "cpu": 0.04941922307540809,
+            "memory": 0.04569876252401014,
+            "bandwidth": 3.181355940616025,
+            "vnf_type": 1
+          },
+          {
+            "cpu": 0.027559855082426764,
+            "memory": 0.034143866525617156,
+            "bandwidth": 2.2311233697533073,
+            "vnf_type": 3
+          },
+          {
+            "cpu": 0.04221775446470809,
+            "memory": 0.035560496414967294,
+            "bandwidth": 1.053079327842435,
+            "vnf_type": 3
+          },
+          {
+            "cpu": 0.032537094544969745,
+            "memory": 0.044606845692106996,
+            "bandwidth": 2.2293670088551063,
+            "vnf_type": 3
+          }
+        ],
+        "adaptive_weights": {
+          "sar_weight": 0.35,
+          "latency_weight": 0.25,
+          "efficiency_weight": 0.25,
+          "quality_weight": 0.15
+        },
+        "base_reward": 75.6877879188326,
+        "completion_bonus": 25.0,
+        "efficiency_bonus": 2.078221731769557,
+        "final_reward": 102.76600965060216,
+        "sar": 1.0,
+        "splat": 100.98580081396402,
+        "adaptive_weights_applied": true,
+        "embedding_completed": true,
+        "total_steps": 4,
+        "adaptive_reward_applied": true
+      },
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 5,
+    "timestamp": "2025-07-04T23:38:47.656494",
+    "stats": {
+      "total_reward": 169.61370577681436,
+      "steps": 5,
+      "success": true,
+      "sar": 1.0,
+      "splat": 106.68703333426257,
+      "jitter": 0.0,
+      "loss": 0.0,
+      "info": {
+        "success": true,
+        "paths": [
+          {
+            "delay": 101.40391589001595,
+            "bandwidth": 49.53490107314748,
+            "hops": 3
+          },
+          {
+            "delay": 117.34571920745928,
+            "bandwidth": 49.53490107314748,
+            "hops": 4
+          },
+          {
+            "delay": 142.87816261197509,
+            "bandwidth": 33.52698695523145,
+            "hops": 4
+          },
+          {
+            "delay": 65.12033562759997,
+            "bandwidth": 33.75037484079482,
+            "hops": 3
+          }
+        ],
+        "total_delay": 426.74813333705026,
+        "min_bandwidth": 33.52698695523145,
+        "resource_utilization": 0.012034432863247976,
+        "avg_jitter": 0.0,
+        "avg_loss": 0.0,
+        "pressure_level": "medium",
+        "is_edge_aware": true,
+        "total_vnfs": 5,
+        "deployed_vnfs": 5,
+        "vnf_requests": [
+          {
+            "cpu": 0.059337629491745834,
+            "memory": 0.033681025446596236,
+            "bandwidth": 1.0585031731160843,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.02182374547303241,
+            "memory": 0.009844870977945631,
+            "bandwidth": 2.4293885517330365,
+            "vnf_type": 3
+          },
+          {
+            "cpu": 0.010636987144530277,
+            "memory": 0.042862510710971226,
+            "bandwidth": 1.5385069399440165,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.0129965060029093,
+            "memory": 0.01876757217597899,
+            "bandwidth": 2.1816216674450493,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.025277638748420813,
+            "memory": 0.027516336888180254,
+            "bandwidth": 1.0475027588290793,
+            "vnf_type": 3
+          }
+        ],
+        "adaptive_weights": {
+          "sar_weight": 0.35,
+          "latency_weight": 0.25,
+          "efficiency_weight": 0.25,
+          "quality_weight": 0.15
+        },
+        "base_reward": 73.76584247637959,
+        "completion_bonus": 25.0,
+        "efficiency_bonus": 1.7543579559773845,
+        "final_reward": 100.52020043235697,
+        "sar": 1.0,
+        "splat": 106.68703333426257,
+        "adaptive_weights_applied": true,
+        "embedding_completed": true,
+        "total_steps": 5,
+        "adaptive_reward_applied": true
+      },
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 6,
+    "timestamp": "2025-07-04T23:38:47.755840",
+    "stats": {
+      "total_reward": 150.85265843647642,
+      "steps": 4,
+      "success": true,
+      "sar": 1.0,
+      "splat": 121.16999376670783,
+      "jitter": 0.0,
+      "loss": 0.0,
+      "info": {
+        "success": true,
+        "paths": [
+          {
+            "delay": 76.86415272456233,
+            "bandwidth": 34.35114337515458,
+            "hops": 2
+          },
+          {
+            "delay": 149.92890106929812,
+            "bandwidth": 35.83276672048905,
+            "hops": 4
+          },
+          {
+            "delay": 136.71692750626303,
+            "bandwidth": 35.83276672048905,
+            "hops": 3
+          }
+        ],
+        "total_delay": 363.5099813001235,
+        "min_bandwidth": 34.35114337515458,
+        "resource_utilization": 0.0077032720008889145,
+        "avg_jitter": 0.0,
+        "avg_loss": 0.0,
+        "pressure_level": "medium",
+        "is_edge_aware": true,
+        "total_vnfs": 4,
+        "deployed_vnfs": 4,
+        "vnf_requests": [
+          {
+            "cpu": 0.025715854322667216,
+            "memory": 0.03499091735039198,
+            "bandwidth": 2.576308184485215,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.036811937371889376,
+            "memory": 0.011162298114736643,
+            "bandwidth": 1.975444808093314,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.01234904309991904,
+            "memory": 0.011740071619527186,
+            "bandwidth": 1.032581291853145,
+            "vnf_type": 3
+          },
+          {
+            "cpu": 0.04452483802031557,
+            "memory": 0.026924703473349514,
+            "bandwidth": 0.6247787530681674,
+            "vnf_type": 1
+          }
+        ],
+        "adaptive_weights": {
+          "sar_weight": 0.35,
+          "latency_weight": 0.25,
+          "efficiency_weight": 0.25,
+          "quality_weight": 0.15
+        },
+        "base_reward": 72.23891437920597,
+        "completion_bonus": 25.0,
+        "efficiency_bonus": 1.7944829867579513,
+        "final_reward": 99.03339736596392,
+        "sar": 1.0,
+        "splat": 121.16999376670783,
+        "adaptive_weights_applied": true,
+        "embedding_completed": true,
+        "total_steps": 4,
+        "adaptive_reward_applied": true
+      },
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 7,
+    "timestamp": "2025-07-04T23:38:48.151431",
+    "stats": {
+      "total_reward": 170.22268668291835,
+      "steps": 5,
+      "success": true,
+      "sar": 1.0,
+      "splat": 111.40704169122012,
+      "jitter": 0.0,
+      "loss": 0.0,
+      "info": {
+        "success": true,
+        "paths": [
+          {
+            "delay": 45.67885719970564,
+            "bandwidth": 72.28343928256797,
+            "hops": 1
+          },
+          {
+            "delay": 82.3786392751272,
+            "bandwidth": 39.120158372482564,
+            "hops": 3
+          },
+          {
+            "delay": 185.37381319290927,
+            "bandwidth": 35.83276672048905,
+            "hops": 3
+          },
+          {
+            "delay": 132.19685709713835,
+            "bandwidth": 29.3323541885565,
+            "hops": 3
+          }
+        ],
+        "total_delay": 445.62816676488046,
+        "min_bandwidth": 29.3323541885565,
+        "resource_utilization": 0.0198482010792428,
+        "avg_jitter": 0.0,
+        "avg_loss": 0.0,
+        "pressure_level": "medium",
+        "is_edge_aware": true,
+        "total_vnfs": 5,
+        "deployed_vnfs": 5,
+        "vnf_requests": [
+          {
+            "cpu": 0.011861374988492903,
+            "memory": 0.02242027789711492,
+            "bandwidth": 2.930051813116652,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.03915822095590248,
+            "memory": 0.04472809356298563,
+            "bandwidth": 2.700833420148624,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.03588903327774008,
+            "memory": 0.039841989802500456,
+            "bandwidth": 3.1823449172603855,
+            "vnf_type": 1
+          },
+          {
+            "cpu": 0.021552796515933587,
+            "memory": 0.025695788605731424,
+            "bandwidth": 1.0310452199082545,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.01756447689958006,
+            "memory": 0.017616699407696754,
+            "bandwidth": 3.3651158921079207,
+            "vnf_type": 2
+          }
+        ],
+        "adaptive_weights": {
+          "sar_weight": 0.35,
+          "latency_weight": 0.25,
+          "efficiency_weight": 0.25,
+          "quality_weight": 0.15
+        },
+        "base_reward": 74.56652984255962,
+        "completion_bonus": 25.0,
+        "efficiency_bonus": 1.5465797596976356,
+        "final_reward": 101.11310960225725,
+        "sar": 1.0,
+        "splat": 111.40704169122012,
+        "adaptive_weights_applied": true,
+        "embedding_completed": true,
+        "total_steps": 5,
+        "adaptive_reward_applied": true
+      },
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 8,
+    "timestamp": "2025-07-04T23:38:49.486354",
+    "stats": {
+      "total_reward": 151.19033276390957,
+      "steps": 4,
+      "success": true,
+      "sar": 1.0,
+      "splat": 123.39677672067562,
+      "jitter": 0.0,
+      "loss": 0.0,
+      "info": {
+        "success": true,
+        "paths": [
+          {
+            "delay": 137.84284107559898,
+            "bandwidth": 30.197395167137998,
+            "hops": 3
+          },
+          {
+            "delay": 89.04104810797392,
+            "bandwidth": 40.75115441339249,
+            "hops": 2
+          },
+          {
+            "delay": 143.30644097845394,
+            "bandwidth": 40.75115441339249,
+            "hops": 3
+          }
+        ],
+        "total_delay": 370.19033016202684,
+        "min_bandwidth": 30.197395167137998,
+        "resource_utilization": 0.01658597797730474,
+        "avg_jitter": 0.0,
+        "avg_loss": 0.0,
+        "pressure_level": "medium",
+        "is_edge_aware": true,
+        "total_vnfs": 4,
+        "deployed_vnfs": 4,
+        "vnf_requests": [
+          {
+            "cpu": 0.02174112418822311,
+            "memory": 0.0337832378466451,
+            "bandwidth": 1.354736046950404,
+            "vnf_type": 1
+          },
+          {
+            "cpu": 0.03673113128648178,
+            "memory": 0.043033805436007384,
+            "bandwidth": 2.6338619762781055,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.0450572686652279,
+            "memory": 0.028147099061378276,
+            "bandwidth": 1.2579216770236936,
+            "vnf_type": 1
+          },
+          {
+            "cpu": 0.0552847682219116,
+            "memory": 0.01632832755930741,
+            "bandwidth": 3.126041288058979,
+            "vnf_type": 2
+          }
+        ],
+        "adaptive_weights": {
+          "sar_weight": 0.35,
+          "latency_weight": 0.25,
+          "efficiency_weight": 0.25,
+          "quality_weight": 0.15
+        },
+        "base_reward": 72.73803514211411,
+        "completion_bonus": 25.0,
+        "efficiency_bonus": 1.5890162528512262,
+        "final_reward": 99.32705139496534,
+        "sar": 1.0,
+        "splat": 123.39677672067562,
+        "adaptive_weights_applied": true,
+        "embedding_completed": true,
+        "total_steps": 4,
+        "adaptive_reward_applied": true
+      },
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 9,
+    "timestamp": "2025-07-04T23:38:51.476389",
+    "stats": {
+      "total_reward": 179.54522320666703,
+      "steps": 5,
+      "success": true,
+      "sar": 1.0,
+      "splat": 89.81991387913764,
+      "jitter": 0.0,
+      "loss": 0.0,
+      "info": {
+        "success": true,
+        "paths": [
+          {
+            "delay": 87.5700854209353,
+            "bandwidth": 26.566324432228825,
+            "hops": 2
+          },
+          {
+            "delay": 100.45560963056144,
+            "bandwidth": 37.76239760683635,
+            "hops": 2
+          },
+          {
+            "delay": 86.65267149334407,
+            "bandwidth": 73.69431077590404,
+            "hops": 2
+          },
+          {
+            "delay": 84.60128897170978,
+            "bandwidth": 78.24568502566139,
+            "hops": 2
+          }
+        ],
+        "total_delay": 359.2796555165506,
+        "min_bandwidth": 26.566324432228825,
+        "resource_utilization": 0.020423338142861992,
+        "avg_jitter": 0.0,
+        "avg_loss": 0.0,
+        "pressure_level": "medium",
+        "is_edge_aware": true,
+        "total_vnfs": 5,
+        "deployed_vnfs": 5,
+        "vnf_requests": [
+          {
+            "cpu": 0.018802218697751807,
+            "memory": 0.02547237831806338,
+            "bandwidth": 0.8897032723116955,
+            "vnf_type": 1
+          },
+          {
+            "cpu": 0.020838943289970376,
+            "memory": 0.01783797883169158,
+            "bandwidth": 3.5167772192355877,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.02646611793278099,
+            "memory": 0.007433281782945904,
+            "bandwidth": 2.603163682557529,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.04529461519046237,
+            "memory": 0.011342201448878465,
+            "bandwidth": 3.731303678796609,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.038063386883539496,
+            "memory": 0.03773306858310855,
+            "bandwidth": 3.4495456150344266,
+            "vnf_type": 1
+          }
+        ],
+        "adaptive_weights": {
+          "sar_weight": 0.35,
+          "latency_weight": 0.25,
+          "efficiency_weight": 0.25,
+          "quality_weight": 0.15
+        },
+        "base_reward": 84.0211669071431,
+        "completion_bonus": 25.0,
+        "efficiency_bonus": 1.4084220561471568,
+        "final_reward": 110.42958896329026,
+        "sar": 1.0,
+        "splat": 89.81991387913764,
+        "adaptive_weights_applied": true,
+        "embedding_completed": true,
+        "total_steps": 5,
+        "adaptive_reward_applied": true
+      },
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 10,
+    "timestamp": "2025-07-04T23:38:53.595392",
+    "stats": {
+      "total_reward": 171.17090662765386,
+      "steps": 5,
+      "success": true,
+      "sar": 1.0,
+      "splat": 108.18573390467745,
+      "jitter": 0.0,
+      "loss": 0.0,
+      "info": {
+        "success": true,
+        "paths": [
+          {
+            "delay": 88.11924645586103,
+            "bandwidth": 59.72152660599726,
+            "hops": 2
+          },
+          {
+            "delay": 117.680415189483,
+            "bandwidth": 40.36892351658393,
+            "hops": 3
+          },
+          {
+            "delay": 103.46633548165457,
+            "bandwidth": 44.413409078361155,
+            "hops": 2
+          },
+          {
+            "delay": 123.4769384917112,
+            "bandwidth": 31.499251021928195,
+            "hops": 3
+          }
+        ],
+        "total_delay": 432.7429356187098,
+        "min_bandwidth": 31.499251021928195,
+        "resource_utilization": 0.02817174314357557,
+        "avg_jitter": 0.0,
+        "avg_loss": 0.0,
+        "pressure_level": "medium",
+        "is_edge_aware": true,
+        "total_vnfs": 5,
+        "deployed_vnfs": 5,
+        "vnf_requests": [
+          {
+            "cpu": 0.04308058932795177,
+            "memory": 0.024294754168208327,
+            "bandwidth": 2.2527677289847445,
+            "vnf_type": 3
+          },
+          {
+            "cpu": 0.032890268921804036,
+            "memory": 0.010912219934834391,
+            "bandwidth": 2.3624047616698713,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.028790267347013388,
+            "memory": 0.01247446107453631,
+            "bandwidth": 3.1040276526578863,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.011264677271591153,
+            "memory": 0.012335462762440266,
+            "bandwidth": 2.0455879554164484,
+            "vnf_type": 2
+          },
+          {
+            "cpu": 0.037967425578520606,
+            "memory": 0.02828382062623597,
+            "bandwidth": 3.189473957519918,
+            "vnf_type": 2
+          }
+        ],
+        "adaptive_weights": {
+          "sar_weight": 0.35,
+          "latency_weight": 0.25,
+          "efficiency_weight": 0.25,
+          "quality_weight": 0.15
+        },
+        "base_reward": 75.3853704190941,
+        "completion_bonus": 25.0,
+        "efficiency_bonus": 1.6570054868823036,
+        "final_reward": 102.0423759059764,
+        "sar": 1.0,
+        "splat": 108.18573390467745,
+        "adaptive_weights_applied": true,
+        "embedding_completed": true,
+        "total_steps": 5,
+        "adaptive_reward_applied": true
+      },
+      "scenario": "normal_operation"
+    }
+  }
+]

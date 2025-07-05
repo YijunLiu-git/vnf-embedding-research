@@ -1,0 +1,132 @@
+[
+  {
+    "episode": 1,
+    "timestamp": "2025-07-05T00:02:58.171398",
+    "stats": {
+      "total_reward": 0.0,
+      "steps": 0,
+      "success": false,
+      "sar": 0.0,
+      "splat": Infinity,
+      "info": {},
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 2,
+    "timestamp": "2025-07-05T00:03:15.927699",
+    "stats": {
+      "total_reward": 0.0,
+      "steps": 0,
+      "success": false,
+      "sar": 0.0,
+      "splat": Infinity,
+      "info": {},
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 3,
+    "timestamp": "2025-07-05T00:03:36.140478",
+    "stats": {
+      "total_reward": 0.0,
+      "steps": 0,
+      "success": false,
+      "sar": 0.0,
+      "splat": Infinity,
+      "info": {},
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 4,
+    "timestamp": "2025-07-05T00:03:54.221793",
+    "stats": {
+      "total_reward": 0.0,
+      "steps": 0,
+      "success": false,
+      "sar": 0.0,
+      "splat": Infinity,
+      "info": {},
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 5,
+    "timestamp": "2025-07-05T00:04:16.877078",
+    "stats": {
+      "total_reward": 0.0,
+      "steps": 0,
+      "success": false,
+      "sar": 0.0,
+      "splat": Infinity,
+      "info": {},
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 6,
+    "timestamp": "2025-07-05T00:04:38.013578",
+    "stats": {
+      "total_reward": 0.0,
+      "steps": 0,
+      "success": false,
+      "sar": 0.0,
+      "splat": Infinity,
+      "info": {},
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 7,
+    "timestamp": "2025-07-05T00:04:58.326198",
+    "stats": {
+      "total_reward": 0.0,
+      "steps": 0,
+      "success": false,
+      "sar": 0.0,
+      "splat": Infinity,
+      "info": {},
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 8,
+    "timestamp": "2025-07-05T00:05:20.354900",
+    "stats": {
+      "total_reward": 0.0,
+      "steps": 0,
+      "success": false,
+      "sar": 0.0,
+      "splat": Infinity,
+      "info": {},
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 9,
+    "timestamp": "2025-07-05T00:05:40.914042",
+    "stats": {
+      "total_reward": 0.0,
+      "steps": 0,
+      "success": false,
+      "sar": 0.0,
+      "splat": Infinity,
+      "info": {},
+      "scenario": "normal_operation"
+    }
+  },
+  {
+    "episode": 10,
+    "timestamp": "2025-07-05T00:06:04.551217",
+    "stats": {
+      "total_reward": 0.0,
+      "steps": 0,
+      "success": false,
+      "sar": 0.0,
+      "splat": Infinity,
+      "info": {},
+      "scenario": "normal_operation"
+    }
+  }
+]

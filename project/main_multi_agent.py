@@ -19,6 +19,9 @@ from utils.logger import Logger
 from utils.metrics import calculate_sar, calculate_splat
 # ✅ 关键修复：使用新的配置加载器
 from config_loader import get_scenario_config, print_scenario_plan, validate_all_configs, load_config
+# 在main_multi_agent.py中  
+from rewards.enhanced_edge_aware_reward import compute_enhanced_edge_aware_reward
+from project.enhanced_training_system import SafeEnhancedTrainer
 
 class MultiAgentTrainer:
     """
