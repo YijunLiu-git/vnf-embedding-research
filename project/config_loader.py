@@ -53,6 +53,8 @@ class ConfigLoader:
         
         return self.get_scenario_config(scenario_name)
     
+    # config_loader.py
+
     def get_scenario_config(self, scenario_name: str) -> Dict[str, Any]:
         """获取指定场景的完整配置"""
         if self.config is None:
@@ -65,7 +67,9 @@ class ConfigLoader:
             'vnf_requirements': self.config['vnf_requirements'].copy(),
             'reward': self.config['reward'].copy(),
             'gnn': self.config['gnn'].copy(),
-            'train': self.config['train'].copy()
+            'train': self.config['train'].copy(),
+            'dimensions': self.config['dimensions'].copy(),  # 新增：包含dimensions
+            'output': self.config['output'].copy()  # 如果需要output配置
         }
         
         # 获取场景特定配置
@@ -93,11 +97,12 @@ class ConfigLoader:
                 'description': scenario_specific.get('description', ''),
             })
         
-        # ✅ 添加调试信息
-        print(f"获取场景配置: {scenario_name}")
-        print(f"  节点资源: {base_config['topology']['node_resources']}")
-        print(f"  边带宽: {base_config['topology']['edge_resources']['bandwidth_min']}-{base_config['topology']['edge_resources']['bandwidth_max']}")
-        print(f"  VNF需求: {base_config['vnf_requirements']['cpu_min']}-{base_config['vnf_requirements']['cpu_max']}")
+        # 调试信息
+        if base_config['output'].get('debug_mode', False):
+            print(f"获取场景配置: {scenario_name}")
+            print(f"  节点资源: {base_config['topology']['node_resources']}")
+            print(f"  边带宽: {base_config['topology']['edge_resources']['bandwidth_min']}-{base_config['topology']['edge_resources']['bandwidth_max']}")
+            print(f"  VNF需求: {base_config['vnf_requirements']['cpu_min']}-{base_config['vnf_requirements']['cpu_max']}")
         
         return base_config
     

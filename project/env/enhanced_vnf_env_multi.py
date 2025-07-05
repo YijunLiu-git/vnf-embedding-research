@@ -10,6 +10,8 @@ from typing import Dict, List, Tuple, Union, Any
 from rewards.reward_v4_comprehensive_multi import compute_reward
 import random
 from collections import defaultdict
+from topology_loader import simulate_dynamic_network_conditions
+from functools import lru_cache  # [修改] 添加 lru_cache 导入
 
 class EdgeAwareStateComputer:
     """
@@ -22,16 +24,24 @@ class EdgeAwareStateComputer:
     4. 边重要性评分
     """
     
-    def __init__(self, graph, edge_features):
+    def __init__(self, graph, edge_features, config=None):
         self.graph = graph
         self.edge_features = edge_features
+        self.config = config or {}
         self.edge_map = list(graph.edges())
         self.edge_index_map = {edge: idx for idx, edge in enumerate(self.edge_map)}
         
+        # 获取边特征维度（支持 baseline 模式）
+        self.expected_edge_dim = self.config.get('dimensions', {}).get('edge_feature_dim_full', 4)
+        if self.config.get('gnn', {}).get('mode', 'edge_aware') == 'baseline':
+            self.expected_edge_dim = self.config.get('dimensions', {}).get('edge_feature_dim_baseline', 2)
         
-        # 缓存机制
-        self.path_cache = {}
-        self.quality_cache = {}
+        # 验证边特征维度
+        if edge_features.shape[1] != self.expected_edge_dim:
+            raise ValueError(f"边特征维度 {edge_features.shape[1]} 不匹配配置中的 expected_edge_dim {self.expected_edge_dim}")
+        
+        # [修改] 移除手动缓存，使用 lru_cache
+        self.max_cache_size = self.config.get('cache', {}).get('max_size', 1000)
         
         print(f"🔧 EdgeAware状态计算器初始化:")
         print(f"   - 图节点数: {len(graph.nodes())}")
@@ -75,6 +85,7 @@ class EdgeAwareStateComputer:
         
         return enhanced_state
     
+    @lru_cache(maxsize=1000)  # [修改] 使用 lru_cache 限制缓存大小
     def _compute_path_quality_matrix(self):
         """计算所有节点对之间的路径质量"""
         quality_matrix = {}
@@ -82,11 +93,6 @@ class EdgeAwareStateComputer:
         for source in self.graph.nodes():
             for target in self.graph.nodes():
                 if source == target:
-                    continue
-                
-                cache_key = (min(source, target), max(source, target))
-                if cache_key in self.quality_cache:
-                    quality_matrix[(source, target)] = self.quality_cache[cache_key]
                     continue
                 
                 try:
@@ -99,7 +105,7 @@ class EdgeAwareStateComputer:
                         all_paths = list(nx.all_simple_paths(
                             self.graph, source, target, cutoff=6
                         ))
-                        alternative_count = len(all_paths) - 1  # 减去最短路径
+                        alternative_count = len(all_paths) - 1
                     except:
                         alternative_count = 0
                     
@@ -116,7 +122,6 @@ class EdgeAwareStateComputer:
                     }
                     
                     quality_matrix[(source, target)] = quality_info
-                    self.quality_cache[cache_key] = quality_info
                     
                 except nx.NetworkXNoPath:
                     quality_matrix[(source, target)] = {
@@ -155,35 +160,24 @@ class EdgeAwareStateComputer:
             u, v = path[i], path[i + 1]
             edge_attr = self._get_edge_attributes(u, v)
             
-            # 提取边特征 [bandwidth, latency, jitter, packet_loss]
             bandwidth = edge_attr[0]
             latency = edge_attr[1]
-            jitter = edge_attr[2]
-            packet_loss = edge_attr[3]
+            jitter = edge_attr[2] if self.expected_edge_dim > 2 else 0.0
+            packet_loss = edge_attr[3] if self.expected_edge_dim > 3 else 0.0
             
-            # 瓶颈带宽
             min_bandwidth = min(min_bandwidth, bandwidth)
-            
-            # 累积延迟和抖动
             total_latency += latency
             total_jitter += jitter
-            
-            # 累积丢包率（简化模型：1 - (1-p1)*(1-p2)*...）
             total_packet_loss = 1 - (1 - total_packet_loss) * (1 - packet_loss)
-            
-            # 可靠性
             edge_reliability = 1.0 - packet_loss
             reliability_product *= edge_reliability
         
-        # 综合质量评分 (0-1之间，越高越好)
-        # 归一化各个指标
-        bandwidth_score = min(min_bandwidth / 100.0, 1.0)  # 假设100为满分带宽
-        latency_score = max(0, 1.0 - total_latency / 100.0)  # 假设100ms为延迟上限
-        jitter_score = max(0, 1.0 - total_jitter / 5.0)  # 假设5ms为抖动上限
+        bandwidth_score = min(min_bandwidth / 100.0, 1.0)
+        latency_score = max(0, 1.0 - total_latency / 100.0)
+        jitter_score = max(0, 1.0 - total_jitter / 5.0)
         loss_score = 1.0 - min(total_packet_loss, 1.0)
         reliability_score = reliability_product
         
-        # 加权综合评分
         quality_score = (
             bandwidth_score * 0.25 +
             latency_score * 0.25 +
@@ -210,7 +204,6 @@ class EdgeAwareStateComputer:
             'bottlenecks': []
         }
         
-        # 计算节点拥塞
         node_load = defaultdict(int)
         for vnf, node in current_embeddings.items():
             node_load[node] += 1
@@ -220,20 +213,14 @@ class EdgeAwareStateComputer:
             load = node_load.get(node, 0)
             congestion_level = load / max(max_load, 1)
             congestion_state['node_congestion'][node] = congestion_level
-            
-            # 识别热点节点
             if congestion_level > 0.7:
                 congestion_state['hotspots'].append(node)
         
-        # 计算边拥塞
         edge_traffic = defaultdict(int)
-        
-        # 基于当前嵌入计算边流量
         vnf_nodes = list(current_embeddings.values())
         for i in range(len(vnf_nodes) - 1):
             source = vnf_nodes[i]
             target = vnf_nodes[i + 1]
-            
             try:
                 path = nx.shortest_path(self.graph, source, target)
                 for j in range(len(path) - 1):
@@ -243,14 +230,11 @@ class EdgeAwareStateComputer:
                 continue
         
         max_traffic = max(edge_traffic.values()) if edge_traffic else 1
-        
         for u, v in self.graph.edges():
             edge_key = tuple(sorted([u, v]))
             traffic = edge_traffic.get(edge_key, 0)
             congestion_level = traffic / max(max_traffic, 1)
             congestion_state['edge_congestion'][(u, v)] = congestion_level
-            
-            # 识别瓶颈边
             if congestion_level > 0.8:
                 congestion_state['bottlenecks'].append((u, v))
         
@@ -267,18 +251,15 @@ class EdgeAwareStateComputer:
         }
         
         if current_vnf_index > 0:
-            # 计算与前序VNF的依赖强度
             for i in range(current_vnf_index):
-                dependency_strength = 1.0 / (current_vnf_index - i)  # 距离越近依赖越强
+                dependency_strength = 1.0 / (current_vnf_index - i)
                 dependency_info['dependency_strength'][i] = dependency_strength
         
-        # 计算灵活性评分（基于网络连通性）
         if current_vnf_index < len(vnf_chain):
             total_connectivity = 0
             for node in self.graph.nodes():
                 connectivity = len(list(self.graph.neighbors(node)))
                 total_connectivity += connectivity
-            
             avg_connectivity = total_connectivity / len(self.graph.nodes())
             dependency_info['flexibility_score'] = min(avg_connectivity / 10.0, 1.0)
         
@@ -290,8 +271,6 @@ class EdgeAwareStateComputer:
         
         for u, v in self.graph.edges():
             importance_score = 0.0
-            
-            # 1. 基于路径质量的重要性
             paths_through_edge = 0
             quality_sum = 0.0
             
@@ -308,18 +287,15 @@ class EdgeAwareStateComputer:
                 avg_quality = quality_sum / paths_through_edge
                 importance_score += avg_quality * 0.4
             
-            # 2. 基于拥塞状态的重要性
             congestion_level = congestion_state['edge_congestion'].get((u, v), 0)
-            # 拥塞越严重，重要性越高（需要更多关注）
             importance_score += congestion_level * 0.3
             
-            # 3. 基于网络拓扑的重要性（中心性）
             try:
                 edge_betweenness = nx.edge_betweenness_centrality(self.graph)
                 betweenness_score = edge_betweenness.get((u, v), edge_betweenness.get((v, u), 0))
                 importance_score += betweenness_score * 0.3
             except:
-                importance_score += 0.1  # 默认值
+                importance_score += 0.1
             
             edge_importance[(u, v)] = min(importance_score, 1.0)
         
@@ -327,8 +303,6 @@ class EdgeAwareStateComputer:
     
     def _generate_network_state_vector(self, path_quality_matrix, congestion_state, edge_importance):
         """生成网络状态向量用于GNN"""
-        
-        # 计算全局网络统计
         total_quality = 0.0
         total_paths = 0
         
@@ -339,30 +313,26 @@ class EdgeAwareStateComputer:
         
         avg_network_quality = total_quality / max(total_paths, 1)
         
-        # 计算拥塞统计
         node_congestion_levels = list(congestion_state['node_congestion'].values())
         edge_congestion_levels = list(congestion_state['edge_congestion'].values())
         
         avg_node_congestion = np.mean(node_congestion_levels) if node_congestion_levels else 0.0
         avg_edge_congestion = np.mean(edge_congestion_levels) if edge_congestion_levels else 0.0
         
-        # 计算重要性统计
         importance_values = list(edge_importance.values())
         avg_edge_importance = np.mean(importance_values) if importance_values else 0.0
         
-        # 网络连通性指标
         connectivity_score = nx.average_node_connectivity(self.graph) / len(self.graph.nodes())
         
-        # 构建网络状态向量 [8维]
         network_state_vector = np.array([
-            avg_network_quality,      # 平均网络质量
-            avg_node_congestion,      # 平均节点拥塞
-            avg_edge_congestion,      # 平均边拥塞
-            avg_edge_importance,      # 平均边重要性
-            connectivity_score,       # 连通性评分
-            len(congestion_state['hotspots']) / len(self.graph.nodes()),  # 热点比例
-            len(congestion_state['bottlenecks']) / len(self.graph.edges()),  # 瓶颈比例
-            total_paths / (len(self.graph.nodes()) ** 2)  # 路径密度
+            avg_network_quality,
+            avg_node_congestion,
+            avg_edge_congestion,
+            avg_edge_importance,
+            connectivity_score,
+            len(congestion_state['hotspots']) / len(self.graph.nodes()),
+            len(congestion_state['bottlenecks']) / len(self.graph.edges()),
+            total_paths / (len(self.graph.nodes()) ** 2)
         ], dtype=np.float32)
         
         return network_state_vector
@@ -374,8 +344,8 @@ class EdgeAwareStateComputer:
         elif (v, u) in self.edge_index_map:
             edge_idx = self.edge_index_map[(v, u)]
         else:
-            # 返回默认属性
-            return np.array([50.0, 10.0, 1.0, 0.01], dtype=np.float32)
+            default_attrs = [50.0, 10.0, 1.0, 0.01][:self.expected_edge_dim]
+            return np.array(default_attrs, dtype=np.float32)
         
         return self.edge_features[edge_idx]
 
@@ -389,6 +359,8 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
     2. 网络拥塞状态建模
     3. 增强的状态表示
     4. 网络感知的动作选择
+    5. 支持动态网络条件
+    6. 支持基线边特征维度
     """
     
     def __init__(self, graph, node_features, edge_features, reward_config, 
@@ -406,20 +378,37 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
         self.chain_length_range = chain_length_range
         self.max_episode_steps = config.get('train', {}).get('max_episode_steps', 20)
         
-        # 🔧 新增：Edge-Aware状态计算器
-        self.edge_aware_computer = EdgeAwareStateComputer(graph, edge_features)
+        # 动态选择边特征维度
+        self.gnn_mode = self.config.get('gnn', {}).get('mode', 'edge_aware')
+        self.edge_dim = self.config.get('dimensions', {}).get('edge_feature_dim_full', 4)
+        if self.gnn_mode == 'baseline':
+            self.edge_dim = self.config.get('dimensions', {}).get('edge_feature_dim_baseline', 2)
+            self.edge_features = self.edge_features[:, :self.edge_dim]
+            self._original_edge_features = self._original_edge_features[:, :self.edge_dim]
         
-        # 状态和动作空间
+        # 验证边特征维度
+        if edge_features.shape[1] != self.edge_dim:
+            raise ValueError(f"边特征维度 {edge_features.shape[1]} 不匹配配置中的 edge_dim {self.edge_dim}")
+        
+        # Edge-Aware状态计算器
+        self.edge_aware_computer = EdgeAwareStateComputer(graph, self.edge_features, config)
+        
+        # [修改] 调整观察空间为展平状态
         self.state_dim = node_features.shape[1] if len(node_features.shape) > 1 else node_features.shape[0]
-        self.edge_dim = edge_features.shape[1] if len(edge_features.shape) > 1 else edge_features.shape[0]
         self.action_dim = self.num_nodes
-        
         self.action_space = spaces.Discrete(self.action_dim)
+        
+        # 计算展平状态的维度
         max_nodes = self.num_nodes
-        max_features = self.state_dim + 16  # 增加网络状态向量的维度
+        node_feature_dim = self.state_dim + 4  # 4为增强特征（占用、拥塞、连通性、重要性）
+        max_edges = len(self.graph.edges())
+        vnf_context_dim = self.config.get('dimensions', {}).get('vnf_context_dim', 6)
+        network_state_dim = 8  # 固定网络状态向量维度
+        total_state_dim = (max_nodes * node_feature_dim) + (max_edges * self.edge_dim) + vnf_context_dim + network_state_dim
+        
         self.observation_space = spaces.Box(
             low=-np.inf, high=np.inf,
-            shape=(max_nodes * max_features,),
+            shape=(total_state_dim,),
             dtype=np.float32
         )
         
@@ -437,7 +426,7 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
         self.initial_node_resources = node_features.copy()
         self.current_node_resources = node_features.copy()
         
-        # 🔧 新增：增强状态缓存
+        # 增强状态缓存
         self.enhanced_state_cache = None
         self.last_enhanced_state_episode = -1
         
@@ -451,15 +440,15 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
         print(f"   - 网络边数: {len(self.graph.edges())}")
         print(f"   - 节点特征维度: {self.state_dim}")
         print(f"   - 边特征维度: {self.edge_dim}")
-        print(f"   - Edge-Aware状态计算: 启用")
+        print(f"   - GNN模式: {self.gnn_mode}")
+        print(f"   - 观察空间维度: {total_state_dim}")
         
         self.reset()
     
-    def apply_scenario_config(self, scenario_config):
-        """应用场景配置（保持原有接口兼容性）"""
+    def apply_scenario_config(self, scenario_config, prev_config=None, transition_steps=5):
+        """应用场景配置，支持平滑过渡"""
         try:
             self.current_scenario_name = scenario_config.get('scenario_name', 'unknown')
-            
             scenario_display_names = {
                 'normal_operation': '正常运营期',
                 'peak_congestion': '高峰拥塞期', 
@@ -476,6 +465,14 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
                 cpu_factor = node_res.get('cpu', 1.0)
                 memory_factor = node_res.get('memory', 1.0)
                 
+                # [修改] 添加平滑过渡逻辑
+                if prev_config and transition_steps > 0 and self.step_count < transition_steps:
+                    prev_cpu_factor = prev_config['topology']['node_resources'].get('cpu', 1.0)
+                    prev_memory_factor = prev_config['topology']['node_resources'].get('memory', 1.0)
+                    weight = min(self.step_count / transition_steps, 1.0)
+                    cpu_factor = prev_cpu_factor * (1 - weight) + cpu_factor * weight
+                    memory_factor = prev_memory_factor * (1 - weight) + memory_factor * weight
+                
                 self.current_node_resources = self._original_node_features * cpu_factor
                 self.initial_node_resources = self.current_node_resources.copy()
             
@@ -483,15 +480,14 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
                 self.reward_config.update(scenario_config['reward'])
             
             self.scenario_applied = True
-            print(f"✅ 增强环境场景配置应用成功: {self.scenario_display_name}")
+            print(f"✅ 增强环境场景配置应用成功: {self.scenario_display_name}, 过渡权重: {weight if prev_config else 1.0:.2f}")
             
         except Exception as e:
             print(f"⚠️ 增强环境场景配置应用出错: {e}")
     
-    def reset(self) -> Data:
-        """重置环境并计算增强状态"""
+    def reset(self) -> np.ndarray:
+        """重置环境并返回展平状态"""
         try:
-            # 基础重置逻辑（保持原有）
             if hasattr(self, '_scenario_vnf_config') and self._scenario_vnf_config:
                 vnf_config = self._scenario_vnf_config.copy()
             else:
@@ -502,12 +498,10 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
                     'chain_length_range': (3, 6)
                 })
             
-            # 生成服务链
             chain_length_range = vnf_config.get('chain_length_range', (3, 6))
             chain_length = np.random.randint(chain_length_range[0], chain_length_range[1] + 1)
             self.service_chain = [f"VNF_{i}" for i in range(chain_length)]
             
-            # 生成VNF需求
             self.vnf_requirements = []
             for i in range(chain_length):
                 cpu_req = np.random.uniform(vnf_config['cpu_min'], vnf_config['cpu_max'])
@@ -522,62 +516,53 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
                     'vnf_type': np.random.choice([1, 2, 3], p=[0.2, 0.5, 0.3])
                 })
             
-            # 重置状态
             self.current_vnf_index = 0
             self.embedding_map.clear()
             self.used_nodes.clear()
             self.step_count = 0
             self.enhanced_state_cache = None
+            self.edge_features = self._original_edge_features.copy()
             
             print(f"\n🔄 增强环境重置 ({self.scenario_display_name}):")
             print(f"   服务链长度: {len(self.service_chain)}")
             
-            return self._get_enhanced_state()
+            state, flattened_state = self._get_enhanced_state()
+            return flattened_state
             
         except Exception as e:
             print(f"⚠️ 增强环境重置出错: {e}")
-            # 回退到基础重置
-            self.current_vnf_index = 0
-            self.embedding_map.clear()
-            self.used_nodes.clear()
-            self.step_count = 0
-            return self._get_basic_state()
+            state, flattened_state = self._get_basic_state()
+            return flattened_state
     
-    def _get_enhanced_state(self) -> Data:
-        """🔧 核心改进：获取增强的Edge-Aware状态"""
+    def _get_enhanced_state(self) -> Tuple[Data, np.ndarray]:
+        """获取增强的Edge-Aware状态，返回 Data 和展平状态"""
         try:
-            # 计算增强状态
             enhanced_state_info = self.edge_aware_computer.compute_enhanced_state(
                 self.service_chain, self.embedding_map, self.current_vnf_index
             )
             
-            # 基础节点特征 (保持8维)
+            self.enhanced_state_cache = enhanced_state_info
             enhanced_node_features = self._compute_enhanced_node_features(enhanced_state_info)
-            
-            # 增强边特征
             enhanced_edge_features = self._compute_enhanced_edge_features(enhanced_state_info)
             
-            # 构建PyG数据对象
             x = torch.tensor(enhanced_node_features, dtype=torch.float32)
             edge_index = torch.tensor(np.array(self.edge_map).T, dtype=torch.long)
             edge_attr = torch.tensor(enhanced_edge_features, dtype=torch.float32)
-            
-            # VNF上下文
             vnf_context = self._compute_vnf_context()
-            
-            # 🔧 新增：网络状态向量
             network_state_vector = torch.tensor(
                 enhanced_state_info['network_state_vector'], dtype=torch.float32
             )
             
-            return Data(
+            state = Data(
                 x=x, 
                 edge_index=edge_index, 
                 edge_attr=edge_attr,
                 vnf_context=vnf_context,
-                network_state=network_state_vector,  # 新增网络状态
-                enhanced_info=enhanced_state_info     # 新增完整增强信息
+                network_state=network_state_vector,
+                enhanced_info=enhanced_state_info
             )
+            
+            return state, self._flatten_state(state)
             
         except Exception as e:
             print(f"⚠️ 增强状态计算失败，使用基础状态: {e}")
@@ -588,82 +573,68 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
         num_nodes = len(self.graph.nodes())
         enhanced_features = np.zeros((num_nodes, 8))
         
-        # 基础特征 (前4维)
         enhanced_features[:, :4] = self.current_node_resources
-        
-        # 增强特征 (后4维)
         congestion_state = enhanced_state_info['congestion_state']
         
         for node_id in range(num_nodes):
-            # 第5维: 节点占用状态
             enhanced_features[node_id, 4] = 1.0 if node_id in self.used_nodes else 0.0
-            
-            # 第6维: 节点拥塞级别
             enhanced_features[node_id, 5] = congestion_state['node_congestion'].get(node_id, 0.0)
-            
-            # 第7维: 节点连通性
             connectivity = len(list(self.graph.neighbors(node_id))) / (num_nodes - 1)
             enhanced_features[node_id, 6] = connectivity
             
-            # 第8维: 节点在关键路径上的重要性
             importance = 0.0
             path_quality_matrix = enhanced_state_info['path_quality_matrix']
-            
             for path_info in path_quality_matrix.values():
                 if path_info['path'] and node_id in path_info['path']:
                     importance += path_info['quality_score']
-            
-            enhanced_features[node_id, 7] = min(importance / 10.0, 1.0)  # 归一化
+            enhanced_features[node_id, 7] = min(importance / 10.0, 1.0)
         
         return enhanced_features
     
     def _compute_enhanced_edge_features(self, enhanced_state_info):
         """计算增强的边特征"""
         num_edges = len(self.edge_map)
-        enhanced_features = np.zeros((num_edges, self.edge_dim + 2))  # 增加2维
-        
-        congestion_state = enhanced_state_info['congestion_state']
-        edge_importance = enhanced_state_info['edge_importance']
+        enhanced_features = np.zeros((num_edges, self.edge_dim))
         
         for i, (u, v) in enumerate(self.edge_map):
-            # 基础边特征 (前4维)
-            enhanced_features[i, :self.edge_dim] = self.edge_features[i]
-            
-            # 增强特征
-            if self.edge_dim + 2 <= enhanced_features.shape[1]:
-                # 第5维: 边拥塞级别
-                congestion = congestion_state['edge_congestion'].get((u, v), 0.0)
-                enhanced_features[i, self.edge_dim] = congestion
-                
-                # 第6维: 边重要性权重
-                importance = edge_importance.get((u, v), 0.0)
-                enhanced_features[i, self.edge_dim + 1] = importance
+            enhanced_features[i] = self.edge_features[i]
         
-        return enhanced_features[:, :self.edge_dim]  # 保持原有维度输出
+        return enhanced_features
     
     def _compute_vnf_context(self):
-        """计算VNF上下文"""
-        if self.current_vnf_index < len(self.vnf_requirements):
+        """计算VNF上下文，增强鲁棒性"""
+        try:
+            if self.current_vnf_index >= len(self.vnf_requirements) or not self.vnf_requirements:
+                return torch.zeros(6, dtype=torch.float32)
+            
             current_vnf_req = self.vnf_requirements[self.current_vnf_index]
             vnf_context = torch.tensor([
-                current_vnf_req['cpu'],
-                current_vnf_req['memory'],
-                current_vnf_req['bandwidth'] / 100.0,
-                current_vnf_req['vnf_type'] / 3.0,
-                self.current_vnf_index / len(self.service_chain),
-                (len(self.service_chain) - self.current_vnf_index) / len(self.service_chain)
+                current_vnf_req.get('cpu', 0.0),
+                current_vnf_req.get('memory', 0.0),
+                current_vnf_req.get('bandwidth', 0.0) / 100.0,
+                current_vnf_req.get('vnf_type', 1.0) / 3.0,
+                self.current_vnf_index / max(len(self.service_chain), 1),
+                (len(self.service_chain) - self.current_vnf_index) / max(len(self.service_chain), 1)
             ], dtype=torch.float32)
-        else:
-            vnf_context = torch.zeros(6, dtype=torch.float32)
-        
-        return vnf_context
+            return vnf_context
+        except Exception as e:
+            print(f"⚠️ VNF上下文计算出错，返回默认值: {e}")
+            return torch.zeros(6, dtype=torch.float32)
     
-    def _get_basic_state(self) -> Data:
+    def _flatten_state(self, state: Data) -> np.ndarray:
+        """将 Data 对象展平为向量，用于观察空间"""
+        x = state.x.flatten().cpu().numpy()
+        edge_attr = state.edge_attr.flatten().cpu().numpy() if state.edge_attr is not None else np.zeros(0)
+        vnf_context = state.vnf_context.cpu().numpy() if state.vnf_context is not None else np.zeros(6)
+        network_state = state.network_state.cpu().numpy() if state.network_state is not None else np.zeros(8)
+        flattened = np.concatenate([x, edge_attr, vnf_context, network_state])
+        return flattened
+    
+    def _get_basic_state(self) -> Tuple[Data, np.ndarray]:
         """获取基础状态（兼容性保证）"""
         enhanced_node_features = self.current_node_resources.copy()
         num_nodes = len(self.graph.nodes())
         
-        # 确保节点特征维度为8
         if enhanced_node_features.shape[1] < 8:
             padding_dims = 8 - enhanced_node_features.shape[1]
             padding = np.zeros((num_nodes, padding_dims))
@@ -682,18 +653,21 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
         edge_index = torch.tensor(np.array(self.edge_map).T, dtype=torch.long)
         edge_attr = torch.tensor(self.edge_features, dtype=torch.float32)
         vnf_context = self._compute_vnf_context()
+        network_state_vector = torch.zeros(8, dtype=torch.float32)
         
-        return Data(x=x, edge_index=edge_index, edge_attr=edge_attr, vnf_context=vnf_context)
+        state = Data(x=x, edge_index=edge_index, edge_attr=edge_attr, 
+                     vnf_context=vnf_context, network_state=network_state_vector)
+        
+        return state, self._flatten_state(state)
     
     def get_enhanced_valid_actions(self) -> List[int]:
-        """🔧 核心改进：获取增强的有效动作（考虑网络质量）"""
+        """获取增强的有效动作（考虑网络质量）"""
         if self.current_vnf_index >= len(self.vnf_requirements):
             return []
         
         current_vnf_req = self.vnf_requirements[self.current_vnf_index]
         valid_actions = []
         
-        # 获取增强状态信息
         if hasattr(self, 'enhanced_state_cache') and self.enhanced_state_cache:
             enhanced_info = self.enhanced_state_cache
         else:
@@ -702,47 +676,39 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
             )
         
         for node in range(self.num_nodes):
-            # 基础约束检查
             constraint_check = self._check_embedding_constraints(node, current_vnf_req)
             if not constraint_check['valid']:
                 continue
-            
-            # 🔧 新增：网络质量约束检查
             if self._check_enhanced_network_constraints(node, current_vnf_req, enhanced_info):
                 valid_actions.append(node)
         
         return valid_actions
     
     def _check_enhanced_network_constraints(self, node, vnf_req, enhanced_info):
-        """🔧 新增：检查增强的网络质量约束"""
+        """检查增强的网络质量约束"""
         if self.current_vnf_index == 0:
-            return True  # 第一个VNF没有路径约束
+            return True
         
-        # 检查与前一个VNF的连接质量
         prev_vnf = self.service_chain[self.current_vnf_index - 1]
         prev_node = self.embedding_map.get(prev_vnf)
         
         if prev_node is None:
             return True
         
-        # 从路径质量矩阵获取质量信息
         path_quality_matrix = enhanced_info['path_quality_matrix']
         path_info = path_quality_matrix.get((prev_node, node), {})
         
-        # 设定质量阈值
         bandwidth_requirement = vnf_req.get('bandwidth', 0)
-        latency_tolerance = 100.0  # ms
-        quality_threshold = 0.3  # 最低质量评分
+        latency_tolerance = self.config.get('reward', {}).get('sla_latency', 100.0)
+        quality_threshold = 0.3
         
-        # 检查路径质量
         if path_info:
             bandwidth_ok = path_info.get('bandwidth', 0) >= bandwidth_requirement
             latency_ok = path_info.get('latency', float('inf')) <= latency_tolerance
             quality_ok = path_info.get('quality_score', 0) >= quality_threshold
-            
             return bandwidth_ok and latency_ok and quality_ok
         
-        return False  # 无路径连接
+        return False
     
     def _check_embedding_constraints(self, node: int, vnf_req: Dict) -> Dict[str, Any]:
         """检查节点是否满足VNF的资源约束"""
@@ -762,9 +728,20 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
         
         return {'valid': True, 'reason': None, 'details': None}
     
-    def step(self, action: int) -> Tuple[Data, float, bool, Dict[str, Any]]:
-        """执行动作 - 使用增强状态"""
+    def step(self, action: int) -> Tuple[np.ndarray, float, bool, Dict[str, Any]]:
+        """执行动作 - 使用增强状态并更新动态网络条件"""
         self.step_count += 1
+        
+        # [修改] 更新动态网络条件并同步图属性
+        self.edge_features = simulate_dynamic_network_conditions(self.graph, self.edge_features, self.step_count)
+        self.edge_aware_computer.edge_features = self.edge_features
+        for idx, (u, v) in enumerate(self.graph.edges()):
+            self.graph.edges[u, v]['bandwidth'] = self.edge_features[idx, 0]
+            self.graph.edges[u, v]['latency'] = self.edge_features[idx, 1]
+            if self.edge_dim > 2:
+                self.graph.edges[u, v]['jitter'] = self.edge_features[idx, 2]
+                self.graph.edges[u, v]['packet_loss'] = self.edge_features[idx, 3]
+            self.graph.edges[u, v]['available_bandwidth'] = self.edge_features[idx, 0]
         
         if action >= self.action_dim:
             return self._handle_invalid_action(f"动作超出范围: {action} >= {self.action_dim}")
@@ -783,15 +760,14 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
             base_penalty = self._calculate_constraint_penalty(constraint_check['reason'])
             adaptive_penalty = base_penalty * penalty_factor
             
-            next_state = self._get_enhanced_state()
-            return next_state, adaptive_penalty, False, {
+            next_state, flattened_state = self._get_enhanced_state()
+            return flattened_state, adaptive_penalty, False, {
                 'success': False,
                 'constraint_violation': constraint_check['reason'],
                 'details': constraint_check['details'],
                 'adaptive_penalty_factor': penalty_factor
             }
         
-        # 执行嵌入
         self.embedding_map[current_vnf] = target_node
         self.used_nodes.add(target_node)
         self._update_node_resources(target_node, current_vnf_req)
@@ -800,9 +776,7 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
         done = (self.current_vnf_index >= len(self.service_chain)) or (self.step_count >= self.max_episode_steps)
         
         if done and self.current_vnf_index >= len(self.service_chain):
-            # 完成嵌入，计算最终奖励
             reward, info = self._calculate_enhanced_final_reward()
-            
             info.update({
                 'success': True,
                 'embedding_completed': True,
@@ -810,7 +784,6 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
                 'enhanced_features_used': True
             })
         else:
-            # 中间步骤奖励
             reward = self._calculate_enhanced_intermediate_reward(current_vnf, target_node)
             info = {
                 'success': True,
@@ -820,18 +793,16 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
                 'step': self.step_count
             }
         
-        next_state = self._get_enhanced_state()
-        return next_state, reward, done, info
+        next_state, flattened_state = self._get_enhanced_state()
+        return flattened_state, reward, done, info
     
     def _calculate_enhanced_final_reward(self) -> Tuple[float, Dict[str, Any]]:
-        """🔧 新增：计算增强的最终奖励"""
+        """计算增强的最终奖励"""
         try:
-            # 获取增强状态信息
             enhanced_info = self.edge_aware_computer.compute_enhanced_state(
                 self.service_chain, self.embedding_map, self.current_vnf_index
             )
             
-            # 计算增强的链指标
             chain_metrics = self._calculate_enhanced_chain_metrics(enhanced_info)
             
             info = {
@@ -842,18 +813,15 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
                 'resource_utilization': chain_metrics['resource_utilization'],
                 'avg_jitter': chain_metrics['avg_jitter'],
                 'avg_loss': chain_metrics['avg_loss'],
-                'is_edge_aware': True,  # 标记为edge-aware版本
-                'path_quality_score': chain_metrics['avg_quality_score'],  # 新增
-                'network_efficiency': chain_metrics['network_efficiency'],  # 新增
-                'congestion_level': chain_metrics['congestion_level'],     # 新增
+                'is_edge_aware': True,
+                'path_quality_score': chain_metrics['avg_quality_score'],
+                'network_efficiency': chain_metrics['network_efficiency'],
+                'congestion_level': chain_metrics['congestion_level'],
                 'enhanced_features_used': True
             }
             
-            # 使用增强奖励计算
             base_reward = self._compute_reward(info)
             completion_bonus = self.reward_config.get('completion_bonus', 15.0)
-            
-            # 🔧 新增：Edge-Aware特有奖励
             edge_aware_bonus = self._calculate_edge_aware_bonus(chain_metrics, enhanced_info)
             
             final_reward = float(base_reward) + float(completion_bonus) + float(edge_aware_bonus)
@@ -871,7 +839,6 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
             
         except Exception as e:
             print(f"⚠️ 增强奖励计算失败: {e}")
-            # 回退到基础奖励
             return self._calculate_basic_final_reward()
     
     def _calculate_enhanced_chain_metrics(self, enhanced_info):
@@ -898,7 +865,6 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
             if node1 is None or node2 is None:
                 continue
             
-            # 从增强状态获取路径信息
             path_info = path_quality_matrix.get((node1, node2), {})
             
             if path_info and path_info.get('path'):
@@ -920,13 +886,11 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
                 total_loss += path_data["loss"]
                 total_quality_score += path_data["quality_score"]
         
-        # 计算资源利用率
         total_cpu_used = sum(self.initial_node_resources[node, 0] - self.current_node_resources[node, 0] 
                             for node in self.used_nodes)
         total_cpu_available = sum(self.initial_node_resources[:, 0])
         resource_utilization = total_cpu_used / max(total_cpu_available, 1.0)
         
-        # 计算网络效率指标
         avg_node_congestion = np.mean(list(congestion_state['node_congestion'].values()))
         avg_edge_congestion = np.mean(list(congestion_state['edge_congestion'].values()))
         network_efficiency = 1.0 - (avg_node_congestion + avg_edge_congestion) / 2.0
@@ -945,27 +909,23 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
         }
     
     def _calculate_edge_aware_bonus(self, chain_metrics, enhanced_info):
-        """🔧 新增：计算Edge-Aware特有奖励"""
+        """计算Edge-Aware特有奖励"""
         bonus = 0.0
         
-        # 1. 路径质量奖励
         avg_quality = chain_metrics.get('avg_quality_score', 0.0)
-        quality_bonus = avg_quality * 20.0  # 最高20分
+        quality_bonus = avg_quality * 20.0
         
-        # 2. 网络效率奖励
         network_efficiency = chain_metrics.get('network_efficiency', 0.0)
-        efficiency_bonus = network_efficiency * 15.0  # 最高15分
+        efficiency_bonus = network_efficiency * 15.0
         
-        # 3. 拥塞避免奖励
         congestion_level = chain_metrics.get('congestion_level', 0.0)
-        congestion_bonus = (1.0 - congestion_level) * 10.0  # 最高10分
+        congestion_bonus = (1.0 - congestion_level) * 10.0
         
-        # 4. 路径多样性奖励
         diversity_bonus = 0.0
         paths = chain_metrics.get('paths', [])
         if len(paths) > 1:
             hop_variance = np.var([p.get('hops', 0) for p in paths])
-            diversity_bonus = min(hop_variance, 5.0)  # 最高5分
+            diversity_bonus = min(hop_variance, 5.0)
         
         total_bonus = quality_bonus + efficiency_bonus + congestion_bonus + diversity_bonus
         
@@ -983,11 +943,8 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
         try:
             base_reward = self.reward_config.get('base_reward', 10.0)
             
-            # 🔧 新增：基于增强状态的奖励
             if hasattr(self, 'enhanced_state_cache') and self.enhanced_state_cache:
                 enhanced_info = self.enhanced_state_cache
-                
-                # 路径质量奖励
                 if self.current_vnf_index > 0:
                     prev_vnf = self.service_chain[self.current_vnf_index - 1]
                     prev_node = self.embedding_map.get(prev_vnf)
@@ -999,7 +956,6 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
                         quality_bonus = quality_score * 5.0
                         base_reward += quality_bonus
                 
-                # 拥塞避免奖励
                 congestion_state = enhanced_info['congestion_state']
                 node_congestion = congestion_state['node_congestion'].get(node, 0.0)
                 congestion_bonus = (1.0 - node_congestion) * 3.0
@@ -1010,7 +966,6 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
         except Exception as e:
             return self.reward_config.get('base_reward', 10.0)
     
-    # 保持原有方法的兼容性
     def _calculate_basic_final_reward(self):
         """基础最终奖励计算（兼容性）"""
         try:
@@ -1108,7 +1063,6 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
             'avg_loss': 0.0
         }
     
-    # 保持原有接口兼容性的其他方法
     def _update_node_resources(self, node_id: int, vnf_req: Dict):
         """更新节点资源"""
         self.current_node_resources[node_id, 0] -= vnf_req['cpu']
@@ -1153,20 +1107,22 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
         elif (v, u) in self.edge_index_map:
             edge_idx = self.edge_index_map[(v, u)]
         else:
-            return np.array([100.0, 1.0, 0.1, 0.01])
+            return np.array([100.0, 1.0] + ([0.1, 0.01] if self.edge_dim > 2 else []), dtype=np.float32)
         return self.edge_features[edge_idx]
     
-    def _handle_invalid_action(self, reason: str) -> Tuple[Data, float, bool, Dict]:
+    def _handle_invalid_action(self, reason: str) -> Tuple[np.ndarray, float, bool, Dict]:
         """处理无效动作"""
-        return self._get_enhanced_state(), -10.0, True, {
+        state, flattened_state = self._get_enhanced_state()
+        return flattened_state, -10.0, True, {
             'success': False,
             'error': reason,
             'step': self.step_count
         }
     
-    def _handle_completion(self) -> Tuple[Data, float, bool, Dict]:
+    def _handle_completion(self) -> Tuple[np.ndarray, float, bool, Dict]:
         """处理已完成的情况"""
-        return self._get_enhanced_state(), 0.0, True, {
+        state, flattened_state = self._get_enhanced_state()
+        return flattened_state, 0.0, True, {
             'success': True,
             'already_completed': True,
             'step': self.step_count
@@ -1202,14 +1158,15 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
         base_info = {
             'service_chain_length': len(self.service_chain),
             'current_vnf_index': self.current_vnf_index,
-            'embedding_progress': self.current_vnf_index / len(self.service_chain),
+            'embedding_progress': self.current_vnf_index / len(self.service_chain) if self.service_chain else 0.0,
             'used_nodes': list(self.used_nodes),
             'remaining_vnfs': len(self.service_chain) - self.current_vnf_index,
             'step_count': self.step_count,
             'valid_actions_count': len(self.get_enhanced_valid_actions()),
             'current_scenario': self.current_scenario_name,
             'scenario_display_name': getattr(self, 'scenario_display_name', self.current_scenario_name),
-            'enhanced_features_enabled': True
+            'enhanced_features_enabled': True,
+            'gnn_mode': self.gnn_mode
         }
         
         return base_info
@@ -1219,6 +1176,7 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
         if seed is not None:
             np.random.seed(seed)
             random.seed(seed)
+            torch.manual_seed(seed)
             return [seed]
         return []
     
@@ -1227,37 +1185,40 @@ class EnhancedVNFEmbeddingEnv(gym.Env):
         pass
 
 
-# 测试函数
 def test_enhanced_vnf_env():
     """测试增强VNF环境"""
     print("🧪 测试增强VNF嵌入环境...")
     
-    # 创建测试图
     import networkx as nx
-    G = nx.erdos_renyi_graph(10, 0.3)
-    
-    # 创建测试特征
-    node_features = np.random.rand(10, 4)
-    edge_features = np.random.rand(len(G.edges()), 4)
-    
-    # 测试配置
-    reward_config = {
-        'base_reward': 10.0,
-        'penalty': 20.0,
-        'completion_bonus': 15.0
-    }
+    G = nx.erdos_renyi_graph(10, 0.3, seed=42)
     
     config = {
+        'dimensions': {
+            'node_feature_dim': 8,
+            'edge_feature_dim_full': 4,
+            'edge_feature_dim_baseline': 2,
+            'vnf_context_dim': 6
+        },
         'vnf_requirements': {
             'cpu_min': 0.1, 'cpu_max': 0.3,
             'memory_min': 0.1, 'memory_max': 0.3,
             'bandwidth_min': 5.0, 'bandwidth_max': 15.0,
             'chain_length_range': (3, 5)
         },
-        'train': {'max_episode_steps': 20}
+        'train': {'max_episode_steps': 20},
+        'gnn': {'mode': 'edge_aware'},
+        'cache': {'max_size': 1000}  # [修改] 添加缓存配置
+    }
+    node_features = np.random.rand(10, config['dimensions']['node_feature_dim'])
+    edge_features = np.random.rand(len(G.edges()), config['dimensions']['edge_feature_dim_full'])
+    
+    reward_config = {
+        'base_reward': 10.0,
+        'penalty': 20.0,
+        'completion_bonus': 15.0,
+        'sla_latency': 100.0
     }
     
-    # 创建增强环境
     env = EnhancedVNFEmbeddingEnv(
         graph=G,
         node_features=node_features,
@@ -1268,20 +1229,28 @@ def test_enhanced_vnf_env():
     
     print("✅ 增强VNF环境创建成功")
     
-    # 测试重置
     state = env.reset()
-    print(f"✅ 环境重置: 状态维度 {state.x.shape}")
+    print(f"✅ 环境重置: 展平状态维度 {state.shape}")
     
-    # 测试增强功能
     valid_actions = env.get_enhanced_valid_actions()
     print(f"✅ 增强有效动作: {len(valid_actions)} 个")
     
-    # 测试步骤
     if valid_actions:
         action = valid_actions[0]
         next_state, reward, done, info = env.step(action)
         print(f"✅ 步骤测试: 奖励={reward:.2f}, 完成={done}")
         print(f"   增强特征: {info.get('enhanced_features_used', False)}")
+    
+    config['gnn']['mode'] = 'baseline'
+    env_baseline = EnhancedVNFEmbeddingEnv(
+        graph=G,
+        node_features=node_features,
+        edge_features=edge_features,
+        reward_config=reward_config,
+        config=config
+    )
+    state = env_baseline.reset()
+    print(f"✅ 基线模式测试: 展平状态维度 {state.shape}")
     
     print("🎉 增强VNF环境测试完成!")
 
