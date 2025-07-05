@@ -24,7 +24,7 @@ dimensions:
 
 # ✅ 关键修复2: 统一训练配置
 train:
-  episodes: 100
+  episodes: 10
   episodes_per_scenario: 25     # 每个场景25轮
   max_episode_steps: 20
   save_interval: 50             # 减少保存频率
